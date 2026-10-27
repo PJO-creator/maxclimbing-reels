@@ -1,0 +1,46 @@
+{
+  "product": "Progressive Pulling System",
+  "price": "€79.90",
+  "url": "maxclimbing.com",
+  "intro": {
+    "clip": "pps75_clean.mp4",
+    "start": 0.0,
+    "dur": 6.3,
+    "question": "Training for a\none-arm pull-up?",
+    "split": "75%",
+    "splitSub": "on one arm.\n25% assist.",
+    "markerAt": 2.2,
+    "anchor": {
+      "x": 695,
+      "y": 465
+    },
+    "barCenter": {
+      "x": 565,
+      "y": 470
+    }
+  },
+  "product_scene": {
+    "image": "products/pps/Progressive_pulling_system_complete.png",
+    "title": "Every hole =\n+5% bodyweight.",
+    "body": "From 50/50 to 100/0."
+  },
+  "schema": {
+    "title": "From two arms\nto one.",
+    "subtitle": "Measurable.",
+    "steps": [
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ]
+  },
+  "tilt": {
+    "title": "Bar level =\nexact load."
+  },
+  "cta": {
+    "image": "products/pps/Progressive_pulling_system_complete.png",
+    "line": "Link in bio"
+  }
+}

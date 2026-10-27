@@ -1,0 +1,69 @@
+{
+  "intro": {
+    "clip": "pps75_clean.mp4",
+    "start": 0.0,
+    "dur": 5.5,
+    "question": "How to train for\na one-arm pull-up",
+    "split": "75%",
+    "splitSub": "on one arm.\n25% assist.",
+    "markerAt": 2.2,
+    "anchor": {
+      "x": 695,
+      "y": 465
+    },
+    "barCenter": {
+      "x": 565,
+      "y": 470
+    }
+  },
+  "steps": [
+    {
+      "kind": "find",
+      "dur": 4.5,
+      "n": "1",
+      "title": "Find your start.",
+      "body": "The hardest hole where you\nstill get 5 clean pull-ups.",
+      "path": [
+        50,
+        55,
+        60,
+        65
+      ],
+      "stop": 65
+    },
+    {
+      "kind": "progress",
+      "dur": 5,
+      "n": "2",
+      "title": "5 reps?\nMove one hole.",
+      "body": "+5% bodyweight\non your pulling arm.",
+      "path": [
+        65,
+        70,
+        75,
+        80
+      ]
+    },
+    {
+      "kind": "tilt",
+      "dur": 3.5,
+      "n": "3",
+      "title": "Keep the bar level.",
+      "body": "Tilts? Your assist arm is cheating."
+    },
+    {
+      "kind": "mirror",
+      "dur": 3.5,
+      "n": "4",
+      "title": "Weaker arm first.",
+      "body": "Then match it on the other side.",
+      "pct": 70
+    }
+  ],
+  "outro": {
+    "dur": 3,
+    "image": "products/pps/Progressive_pulling_system_detail1.jpg",
+    "title": "Save this for your\nnext pull session.",
+    "body": "Progressive Pulling System"
+  }
+}
