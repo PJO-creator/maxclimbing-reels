@@ -2,7 +2,7 @@ import React from 'react';
 import {Composition} from 'remotion';
 import {PPSReel, buildTimeline} from './PPSReel';
 import {PPSLearn, learnTimeline, LearnContent} from './PPSLearn';
-import {PPS3DTest} from './three/PPS3DTest';
+import {PPS3DTest, FLY_DURATION} from './three/PPS3DTest';
 import pps from '../data/pps.json';
 import ppsLearn from '../data/pps-learn.json';
 
@@ -31,6 +31,6 @@ export const RemotionRoot: React.FC = () => (
       calculateMetadata={({props}) => ({durationInFrames: learnTimeline(props.content).total})}
     />
     {/* 3D style test */}
-    <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={190} fps={30} width={1080} height={1920} />
+    <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
   </>
 );

@@ -4,7 +4,7 @@ import {ThreeCanvas} from '@remotion/three';
 import {useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
-import {Bar, Carabiner, Handle, PPS, Rope, holeX, usePPSGeometry} from './PPSModel';
+import {Bar, CARA, Carabiner, Handle, PPS, Rope, anchorCaraY, holeX, usePPSGeometry} from './PPSModel';
 import {C, FONT} from '../PPSReel';
 
 // Environment map set synchronously (canvas doesn't redraw after effects)
@@ -13,15 +13,36 @@ const Env: React.FC = () => {
   useMemo(() => {
     const pm = new THREE.PMREMGenerator(gl);
     scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
-    (scene as unknown as {environmentIntensity: number}).environmentIntensity = 1.1;
+    (scene as unknown as {environmentIntensity: number}).environmentIntensity = 0.9;
   }, [gl, scene]);
   return null;
 };
 
-const Cam: React.FC<{yaw: number; pitch: number; dist: number; lookY: number}> = ({yaw, pitch, dist, lookY}) => {
+// ---- Camera fly-by: keyframes of [frame, position, target] ----
+type V3 = [number, number, number];
+const KEYS: {f: number; pos: V3; at: V3}[] = [
+  {f: 0, pos: [-62, 20, 62], at: [-14, -1, 0]}, // 3/4 from the upper left: left half + handle
+  {f: 55, pos: [-18, 9, 42], at: [-2, 1, 0]}, // closer, sliding over the engraving towards the logo
+  {f: 105, pos: [26, 4, 40], at: [8, 0, 0]}, // past the centre, low angle
+  {f: 145, pos: [62, 12, 70], at: [12, -4, 0]}, // 3/4 from the right, whole bar + handles
+  {f: 180, pos: [0, 6, 212], at: [0, -5, 0]}, // front view
+];
+const lerp3 = (a: V3, b: V3, t: number): V3 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const camAt = (f: number) => {
+  const posCurve = new THREE.CatmullRomCurve3(KEYS.map((k) => new THREE.Vector3(...k.pos)), false, 'centripetal');
+  const i = Math.max(0, KEYS.findIndex((k, j) => j < KEYS.length - 1 && f >= k.f && f < KEYS[j + 1].f));
+  const k0 = KEYS[Math.min(i, KEYS.length - 2)], k1 = KEYS[Math.min(i, KEYS.length - 2) + 1];
+  const local = Math.min(1, Math.max(0, (f - k0.f) / (k1.f - k0.f)));
+  const segT = (Math.min(i, KEYS.length - 2) + Easing.inOut(Easing.sin)(local)) / (KEYS.length - 1);
+  const p = f >= KEYS[KEYS.length - 1].f ? new THREE.Vector3(...KEYS[KEYS.length - 1].pos) : posCurve.getPoint(segT);
+  const at = f >= KEYS[KEYS.length - 1].f ? KEYS[KEYS.length - 1].at : lerp3(k0.at, k1.at, Easing.inOut(Easing.sin)(local));
+  return {p, at};
+};
+const Cam: React.FC<{f: number}> = ({f}) => {
   const {camera} = useThree();
-  camera.position.set(Math.sin(yaw) * Math.cos(pitch) * dist, lookY + Math.sin(pitch) * dist, Math.cos(yaw) * Math.cos(pitch) * dist);
-  camera.lookAt(0, lookY, 0);
+  const {p, at} = camAt(f);
+  camera.position.copy(p);
+  camera.lookAt(...at);
   return null;
 };
 
@@ -29,46 +50,55 @@ const Cam: React.FC<{yaw: number; pitch: number; dist: number; lookY: number}> =
 const anchorAt = (f: number, path: number[], start: number, per: number) => {
   const t = (f - start) / per;
   if (t <= 0) return {x: holeX(path[0]), lift: 0, pct: path[0]};
-  const i = Math.min(Math.floor(t), path.length - 2);
   if (t >= path.length - 1) return {x: holeX(path[path.length - 1]), lift: 0, pct: path[path.length - 1]};
+  const i = Math.floor(t);
   const fr = Math.min(1, (t - i) * 1.8);
   const e = Easing.inOut(Easing.cubic)(fr);
-  return {x: holeX(path[i]) + (holeX(path[i + 1]) - holeX(path[i])) * e, lift: Math.sin(fr * Math.PI) * 2.2, pct: fr > 0.5 ? path[i + 1] : path[i]};
+  return {x: holeX(path[i]) + (holeX(path[i + 1]) - holeX(path[i])) * e, lift: Math.sin(fr * Math.PI) * 2.5, pct: fr > 0.5 ? path[i + 1] : path[i]};
 };
+
+export const FLY_DURATION = 290;
 
 export const PPS3DTest: React.FC = () => {
   const f = useCurrentFrame();
   const {width, height} = useVideoConfig();
   const geo = usePPSGeometry();
-  const yaw = interpolate(f, [0, 70], [-0.75, 0], {extrapolateRight: 'clamp', easing: Easing.inOut(Easing.cubic)});
-  const pitch = interpolate(f, [0, 70], [0.28, 0.06], {extrapolateRight: 'clamp', easing: Easing.inOut(Easing.cubic)});
-  const dist = interpolate(f, [0, 70], [130, 250], {extrapolateRight: 'clamp', easing: Easing.inOut(Easing.cubic)});
-  const a = anchorAt(f, [50, 55, 60, 65, 70, 75], 80, 16);
-  const ay = PPS.holeY + 0.9 + a.lift;
-  const textO = interpolate(f, [76, 86], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const a = anchorAt(f, [50, 55, 60, 65, 70, 75], 192, 16);
+  const ay = anchorCaraY + a.lift;
+  const titleO = interpolate(f, [15, 30, 140, 158], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const textO = interpolate(f, [178, 190], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
-    <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 38%, #ffffff 0%, #e4e1db 55%, #c9c5bd 100%)'}}>
-      {geo && (<ThreeCanvas width={width} height={height} camera={{fov: 30, near: 1, far: 2000}} gl={{antialias: true, toneMapping: THREE.ACESFilmicToneMapping}}>
-        <Env />
-        <Cam yaw={yaw} pitch={pitch} dist={dist} lookY={-3} />
-        <ambientLight intensity={0.25} />
-        <directionalLight position={[-40, 60, 80]} intensity={1.6} />
-        <directionalLight position={[50, 20, -60]} intensity={1.2} color="#ffd9c7" />
-        <group position={[0, PPS.yCenter, 0]}>
-          <Bar geo={geo} />
-        </group>
-        <group position={[0, PPS.yCenter - PPS.yCenter, 0]}>
+    <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, #4a4844 0%, #262523 45%, #0F0F0E 100%)'}}>
+      {geo && (
+        <ThreeCanvas width={width} height={height} camera={{fov: 32, near: 0.5, far: 2000}} gl={{antialias: true, toneMapping: THREE.ACESFilmicToneMapping}}>
+          <Env />
+          <Cam f={f} />
+          <ambientLight intensity={0.2} />
+          {/* key, fill, and two rim lights to separate the black plate from the dark background */}
+          <directionalLight position={[-40, 60, 80]} intensity={1.4} />
+          <directionalLight position={[60, 10, 40]} intensity={0.5} color="#dfe6ff" />
+          <directionalLight position={[0, 80, -80]} intensity={2.2} color="#ffffff" />
+          <directionalLight position={[-70, -10, -50]} intensity={1.2} color="#ffd2c2" />
+          <group position={[0, PPS.yCenter, 0]}>
+            <Bar geo={geo} />
+          </group>
           <Carabiner position={[a.x, ay, 0]} />
-          <Rope x={a.x} fromY={ay + 1.7} />
+          <Rope x={a.x} fromY={ay + CARA.h / 2 - CARA.wire} />
           <Handle x={-PPS.handleX} />
           <Handle x={PPS.handleX} />
-        </group>
-      </ThreeCanvas>)}
-      <AbsoluteFill style={{fontFamily: FONT, color: C.bg, opacity: textO}}>
-        <div style={{position: 'absolute', left: 80, right: 140, top: 1190, fontSize: 92, fontWeight: 800, letterSpacing: -2, lineHeight: 1.02}}>Every hole =<br />+5% bodyweight.</div>
-        <div style={{position: 'absolute', left: 80, top: 1420, display: 'flex', alignItems: 'baseline', gap: 24}}>
-          <span style={{fontSize: 150, fontWeight: 800, letterSpacing: -4, color: C.accent}}>{a.pct}%</span>
-          <span style={{fontSize: 52, fontWeight: 700, color: '#55534F'}}>on the pulling arm</span>
+        </ThreeCanvas>
+      )}
+      <AbsoluteFill style={{fontFamily: FONT, color: C.ink}}>
+        <div style={{position: 'absolute', left: 80, top: 1240, opacity: titleO}}>
+          <div style={{fontSize: 44, fontWeight: 700, color: '#B9B5AD', letterSpacing: 1}}>MAX CLIMBING</div>
+          <div style={{fontSize: 96, fontWeight: 800, letterSpacing: -2, lineHeight: 1.0, marginTop: 8}}>Progressive<br />Pulling System</div>
+        </div>
+        <div style={{opacity: textO}}>
+          <div style={{position: 'absolute', left: 80, right: 140, top: 1190, fontSize: 92, fontWeight: 800, letterSpacing: -2, lineHeight: 1.02}}>Every hole =<br />+5% bodyweight.</div>
+          <div style={{position: 'absolute', left: 80, top: 1420, display: 'flex', alignItems: 'baseline', gap: 24}}>
+            <span style={{fontSize: 150, fontWeight: 800, letterSpacing: -4, background: C.accent, borderRadius: 24, padding: '0 28px 10px'}}>{a.pct}%</span>
+            <span style={{fontSize: 52, fontWeight: 700, color: '#B9B5AD'}}>on the pulling arm</span>
+          </div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

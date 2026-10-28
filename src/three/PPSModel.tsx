@@ -11,7 +11,15 @@ export const PPS = {
   handleY: 0,
   thickness: 0.5,
   yCenter: 1.75, // plate spans y -1.5..5
+  holeR: 0.55, // hole radius
 };
+
+// Carabiner dimensions (cm): centre-line height/width and wire radius
+export const CARA = {h: 5.6, w: 2.7, wire: 0.27};
+/** centre y of the anchor carabiner: its bottom bend rests on the top edge of the hole */
+export const anchorCaraY = PPS.holeY + PPS.holeR - CARA.wire + CARA.h / 2;
+/** centre y of a handle carabiner: its top bend rests on the bottom edge of the handle hole */
+export const handleCaraY = PPS.handleY - PPS.holeR + CARA.wire - CARA.h / 2;
 /** x position of the anchor hole for a given % on the pulling arm (right = +x) */
 export const holeX = (pct: number, side: 'right' | 'left' = 'right') => ((pct - 50) / 5) * PPS.holeSpacing * (side === 'right' ? 1 : -1);
 
@@ -51,25 +59,37 @@ export const Bar: React.FC<{geo: {body: THREE.BufferGeometry; print: THREE.Buffe
   </group>
 );
 
-/** Carabiner: stadium-shaped ring, in the YZ plane so it threads through a hole */
-export const Carabiner: React.FC<{position: [number, number, number]; scale?: number}> = ({position, scale = 1}) => {
+/** Carabiner: D-shaped ring in the YZ plane (threads through a hole in the XY-plane plate).
+ *  Bottom and top bends cross z=0, so they sit inside the hole. */
+export const Carabiner: React.FC<{position: [number, number, number]}> = ({position}) => {
   const geo = useMemo(() => {
-    const w = 1.3, h = 3.6, r = w / 2;
-    const path = new THREE.CurvePath<THREE.Vector3>();
+    const {h, w} = CARA;
+    const r = w / 2;
     const pts: THREE.Vector3[] = [];
-    for (let i = 0; i <= 24; i++) {
-      const a = Math.PI + (i / 24) * Math.PI; // bottom arc
-      pts.push(new THREE.Vector3(0, -h / 2 + r + Math.sin(a) * r, Math.cos(a) * r));
+    const N = 28;
+    // bottom bend: gate side (+z) -> spine side (-z)
+    for (let i = 0; i <= N; i++) {
+      const a = Math.PI + (i / N) * Math.PI;
+      pts.push(new THREE.Vector3(0, -h / 2 + r + Math.sin(a) * r, -Math.cos(a) * r));
     }
-    for (let i = 0; i <= 24; i++) {
-      const a = (i / 24) * Math.PI; // top arc
-      pts.push(new THREE.Vector3(0, h / 2 - r + Math.sin(a) * r, Math.cos(a) * r));
+    // spine (straight, -z) going up
+    for (let i = 1; i < N; i++) {
+      const t = i / N;
+      pts.push(new THREE.Vector3(0, -h / 2 + r + t * (h - 2 * r), -r));
     }
-    pts.push(pts[0].clone());
-    path.add(new THREE.CatmullRomCurve3(pts, true));
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 120, 0.16, 12, true);
+    // top bend: spine (-z) -> gate (+z)
+    for (let i = 0; i <= N; i++) {
+      const a = (i / N) * Math.PI;
+      pts.push(new THREE.Vector3(0, h / 2 - r + Math.sin(a) * r, -Math.cos(a) * r));
+    }
+    // gate side (+z, slightly bowed) going down
+    for (let i = 1; i < N; i++) {
+      const t = i / N;
+      pts.push(new THREE.Vector3(0, h / 2 - r - t * (h - 2 * r), r + Math.sin(t * Math.PI) * 0.35));
+    }
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 200, CARA.wire, 14, true);
   }, []);
-  return <mesh geometry={geo} material={steel} position={position} scale={scale} />;
+  return <mesh geometry={geo} material={steel} position={position} />;
 };
 
 /** Rope from the anchor carabiner straight up out of frame */
@@ -88,17 +108,17 @@ export const Rope: React.FC<{x: number; fromY: number; length?: number}> = ({x, 
 
 /** D-handle: carabiner, V-shaped strap, steel grip */
 export const Handle: React.FC<{x: number; highlight?: boolean}> = ({x}) => {
-  const top = PPS.handleY - 2.6; // bottom of handle carabiner
+  const top = handleCaraY - CARA.h / 2 + CARA.wire; // strap hangs from the carabiner's bottom bend
   const gripY = top - 13;
   const gripLen = 11;
   const strapLen = Math.hypot(gripLen / 2, top - gripY);
   const ang = Math.atan2(gripLen / 2, top - gripY);
   return (
     <group position={[x, 0, 0]}>
-      <Carabiner position={[0, PPS.handleY - 0.9, 0]} />
+      <Carabiner position={[0, handleCaraY, 0]} />
       {[-1, 1].map((s) => (
         <mesh key={s} material={strap} position={[(s * gripLen) / 4, (top + gripY) / 2, 0]} rotation={[0, 0, s * ang]}>
-          <boxGeometry args={[2.4, strapLen, 0.25]} />
+          <boxGeometry args={[2.5, strapLen, 0.3]} />
         </mesh>
       ))}
       {[-1, 1].map((s) => (
