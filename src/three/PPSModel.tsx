@@ -47,7 +47,7 @@ export const usePPSGeometry = () => {
 const steel = new THREE.MeshStandardMaterial({color: '#d9dde2', metalness: 1, roughness: 0.22});
 const black = new THREE.MeshStandardMaterial({color: '#1a1a1a', metalness: 0.3, roughness: 0.5, side: THREE.DoubleSide});
 const white = new THREE.MeshStandardMaterial({color: '#f2f2f2', metalness: 0, roughness: 0.6, emissive: '#ffffff', emissiveIntensity: 0.35, side: THREE.DoubleSide});
-const strap = new THREE.MeshStandardMaterial({color: '#0c0c0c', metalness: 0, roughness: 0.9});
+const strap = new THREE.MeshStandardMaterial({color: '#2c2b2a', metalness: 0.05, roughness: 0.75});
 const rope = new THREE.MeshStandardMaterial({color: '#1d1a19', metalness: 0, roughness: 0.85});
 const ropeFleck = new THREE.MeshStandardMaterial({color: '#A10303', metalness: 0, roughness: 0.8});
 

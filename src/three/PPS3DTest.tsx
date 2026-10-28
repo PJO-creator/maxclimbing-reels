@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 import {Bar, CARA, Carabiner, Handle, PPS, Rope, anchorCaraY, holeX, usePPSGeometry} from './PPSModel';
 import {C, FONT} from '../PPSReel';
+import {CamKey, camAt} from './camera';
 
 // Environment map set synchronously (canvas doesn't redraw after effects)
 const Env: React.FC = () => {
@@ -18,30 +19,18 @@ const Env: React.FC = () => {
   return null;
 };
 
-// ---- Camera fly-by: keyframes of [frame, position, target] ----
-type V3 = [number, number, number];
-const KEYS: {f: number; pos: V3; at: V3}[] = [
+// ---- Camera fly-by (smooth spline, no stops between keys) ----
+const KEYS: CamKey[] = [
   {f: 0, pos: [-62, 20, 62], at: [-14, -1, 0]}, // 3/4 from the upper left: left half + handle
   {f: 55, pos: [-18, 9, 42], at: [-2, 1, 0]}, // closer, sliding over the engraving towards the logo
   {f: 105, pos: [26, 4, 40], at: [8, 0, 0]}, // past the centre, low angle
   {f: 145, pos: [62, 12, 70], at: [12, -4, 0]}, // 3/4 from the right, whole bar + handles
-  {f: 180, pos: [0, 6, 212], at: [0, -5, 0]}, // front view
+  {f: 185, pos: [0, 6, 212], at: [0, -5, 0]}, // front view
 ];
-const lerp3 = (a: V3, b: V3, t: number): V3 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-const camAt = (f: number) => {
-  const posCurve = new THREE.CatmullRomCurve3(KEYS.map((k) => new THREE.Vector3(...k.pos)), false, 'centripetal');
-  const i = Math.max(0, KEYS.findIndex((k, j) => j < KEYS.length - 1 && f >= k.f && f < KEYS[j + 1].f));
-  const k0 = KEYS[Math.min(i, KEYS.length - 2)], k1 = KEYS[Math.min(i, KEYS.length - 2) + 1];
-  const local = Math.min(1, Math.max(0, (f - k0.f) / (k1.f - k0.f)));
-  const segT = (Math.min(i, KEYS.length - 2) + Easing.inOut(Easing.sin)(local)) / (KEYS.length - 1);
-  const p = f >= KEYS[KEYS.length - 1].f ? new THREE.Vector3(...KEYS[KEYS.length - 1].pos) : posCurve.getPoint(segT);
-  const at = f >= KEYS[KEYS.length - 1].f ? KEYS[KEYS.length - 1].at : lerp3(k0.at, k1.at, Easing.inOut(Easing.sin)(local));
-  return {p, at};
-};
 const Cam: React.FC<{f: number}> = ({f}) => {
   const {camera} = useThree();
-  const {p, at} = camAt(f);
-  camera.position.copy(p);
+  const {pos, at} = camAt(KEYS, f);
+  camera.position.set(...pos);
   camera.lookAt(...at);
   return null;
 };
