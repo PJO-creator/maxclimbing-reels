@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {continueRender, delayRender, staticFile} from 'remotion';
 import * as THREE from 'three';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
+import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 // Geometry facts from the CAD file (units: cm)
 export const PPS = {
@@ -106,24 +107,80 @@ export const Rope: React.FC<{x: number; fromY: number; length?: number}> = ({x, 
   </group>
 );
 
-/** D-handle: carabiner, V-shaped strap, steel grip */
+// Woven webbing: a small striped canvas used as bump map (no external textures)
+const weave = (() => {
+  if (typeof document === 'undefined') return null;
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#808080';
+  g.fillRect(0, 0, 64, 64);
+  for (let y = 0; y < 64; y += 4) {
+    g.fillStyle = y % 8 ? '#b0b0b0' : '#505050';
+    g.fillRect(0, y, 64, 2);
+  }
+  for (let x = 0; x < 64; x += 8) {
+    g.fillStyle = 'rgba(0,0,0,.18)';
+    g.fillRect(x, 0, 1, 64);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(2, 18);
+  return t;
+})();
+const webbing = new THREE.MeshStandardMaterial({color: '#2a2928', roughness: 0.92, metalness: 0, bumpMap: weave ?? undefined, bumpScale: 0.6});
+const stitch = new THREE.MeshStandardMaterial({color: '#8d8a85', roughness: 0.9});
+
+/** Box-stitch (rectangle + X) on the webbing, both faces */
+const BoxStitch: React.FC<{w: number; h: number; y: number; z: number}> = ({w, h, y, z}) => {
+  const t = 0.09;
+  const d = Math.hypot(w, h);
+  const ang = Math.atan2(h, w);
+  return (
+    <group position={[0, y, z]}>
+      {[
+        {p: [0, h / 2, 0], s: [w, t, t], r: 0},
+        {p: [0, -h / 2, 0], s: [w, t, t], r: 0},
+        {p: [w / 2, 0, 0], s: [t, h, t], r: 0},
+        {p: [-w / 2, 0, 0], s: [t, h, t], r: 0},
+        {p: [0, 0, 0], s: [d, t, t], r: ang},
+        {p: [0, 0, 0], s: [d, t, t], r: -ang},
+      ].map((b, i) => (
+        <mesh key={i} material={stitch} position={b.p as [number, number, number]} rotation={[0, 0, b.r]}>
+          <boxGeometry args={b.s as [number, number, number]} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+/** D-handle: carabiner, V-shaped webbing with box stitching, steel grip */
 export const Handle: React.FC<{x: number; highlight?: boolean}> = ({x}) => {
-  const top = handleCaraY - CARA.h / 2 + CARA.wire; // strap hangs from the carabiner's bottom bend
+  const top = handleCaraY - CARA.h / 2 + CARA.wire; // webbing hangs from the carabiner's bottom bend
   const gripY = top - 13;
   const gripLen = 11;
   const strapLen = Math.hypot(gripLen / 2, top - gripY);
   const ang = Math.atan2(gripLen / 2, top - gripY);
+  const W = 2.5, T = 0.32;
+  const legGeo = useMemo(() => new RoundedBoxGeometry(W, strapLen, T, 3, 0.12), [strapLen]);
   return (
     <group position={[x, 0, 0]}>
       <Carabiner position={[0, handleCaraY, 0]} />
+      {/* webbing folded around the carabiner */}
+      <mesh material={webbing} position={[0, top - 0.35, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <torusGeometry args={[0.55, 0.16, 10, 24, Math.PI]} />
+      </mesh>
       {[-1, 1].map((s) => (
-        <mesh key={s} material={strap} position={[(s * gripLen) / 4, (top + gripY) / 2, 0]} rotation={[0, 0, s * ang]}>
-          <boxGeometry args={[2.5, strapLen, 0.3]} />
-        </mesh>
+        <group key={s} position={[(s * gripLen) / 4, (top + gripY) / 2, 0]} rotation={[0, 0, s * ang]}>
+          <mesh geometry={legGeo} material={webbing} />
+          <BoxStitch w={W * 0.7} h={1.8} y={strapLen / 2 - 2.2} z={T / 2 + 0.01} />
+          <BoxStitch w={W * 0.7} h={1.8} y={-strapLen / 2 + 2.4} z={T / 2 + 0.01} />
+        </group>
       ))}
+      {/* webbing loops around the grip ends */}
       {[-1, 1].map((s) => (
-        <mesh key={`l${s}`} material={strap} position={[(s * gripLen) / 2, gripY, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[1.5, 1.5, 2.2, 24]} />
+        <mesh key={`l${s}`} material={webbing} position={[(s * gripLen) / 2, gripY, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[1.55, 1.55, W, 32]} />
         </mesh>
       ))}
       <mesh material={steel} position={[0, gripY, 0]} rotation={[0, 0, Math.PI / 2]}>

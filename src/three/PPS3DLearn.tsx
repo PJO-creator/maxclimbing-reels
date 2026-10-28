@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {ThreeCanvas} from '@remotion/three';
 import {useThree} from '@react-three/fiber';
 import * as THREE from 'three';
@@ -10,25 +10,27 @@ import {CamKey, V3, camAt, project} from './camera';
 
 // 3D "how to train" reel. Timings in frames @30fps live in data/pps-3d-learn.json.
 export type Learn3DContent = {
-  hook: {from: number; to: number; text: string; accent?: boolean}[];
+  hook: {from: number; to: number; text: string; accent?: boolean; panel?: boolean}[];
   steps: {n: string; from: number; to: number; title: string; body: string; badge?: string}[];
   outro: {from: number; to: number; title: string; body: string; sub: string};
+  clip?: {src: string; start: number; until: number};
 };
-export const LEARN3D_DURATION = 720;
+export const LEARN3D_DURATION = 745;
 const FOV = 32;
 
 // One continuous camera path for the whole reel
 const KEYS: CamKey[] = [
-  {f: 0, pos: [-62, 20, 62], at: [-14, -1, 0]},
-  {f: 45, pos: [-18, 9, 42], at: [-2, 1, 0]},
-  {f: 85, pos: [30, 5, 45], at: [8, -1, 0]},
-  {f: 130, pos: [0, 2, 215], at: [0, -13, 0]}, // front view: bar high in frame, room for labels + text below
-  {f: 260, pos: [5, 3, 214], at: [0, -13, 0]},
-  {f: 410, pos: [-5, 4, 212], at: [0, -13, 0]},
-  {f: 515, pos: [4, 2, 214], at: [0, -13, 0]},
-  {f: 620, pos: [0, 2, 215], at: [0, -13, 0]},
-  {f: 670, pos: [-52, 14, 95], at: [-4, -7, 0]},
-  {f: 720, pos: [-40, 10, 78], at: [-2, -6, 0]},
+  {f: 0, pos: [-62, 20, 62], at: [-14, -1, 0]}, // hidden behind the real clip
+  {f: 75, pos: [-58, 19, 60], at: [-13, -1, 0]}, // fly-by starts as the clip fades out
+  {f: 110, pos: [-18, 9, 42], at: [-2, 1, 0]},
+  {f: 140, pos: [30, 5, 45], at: [8, -1, 0]},
+  {f: 170, pos: [0, 2, 215], at: [0, -13, 0]}, // front view: bar high in frame, room for labels + text below
+  {f: 285, pos: [5, 3, 214], at: [0, -13, 0]},
+  {f: 435, pos: [-5, 4, 212], at: [0, -13, 0]},
+  {f: 540, pos: [4, 2, 214], at: [0, -13, 0]},
+  {f: 645, pos: [0, 2, 215], at: [0, -13, 0]},
+  {f: 695, pos: [-52, 14, 95], at: [-4, -7, 0]},
+  {f: 745, pos: [-40, 10, 78], at: [-2, -6, 0]},
 ];
 
 const Env: React.FC = () => {
@@ -52,13 +54,13 @@ const Cam: React.FC<{pos: V3; at: V3}> = ({pos, at}) => {
 type Hop = {f: number; to: number};
 const HOPS: Hop[] = [
   // step 1: search the start, 50 -> 65
-  {f: 150, to: 55}, {f: 175, to: 60}, {f: 200, to: 65},
+  {f: 175, to: 55}, {f: 200, to: 60}, {f: 225, to: 65},
   // step 2: progress 65 -> 80
-  {f: 290, to: 70}, {f: 325, to: 75}, {f: 360, to: 80},
+  {f: 315, to: 70}, {f: 350, to: 75}, {f: 385, to: 80},
   // step 3: back to 75 for the tilt demo
-  {f: 418, to: 75},
+  {f: 443, to: 75},
   // step 4: weak side first (left 70), then strong side (right 70)
-  {f: 522, to: -70}, {f: 572, to: 70},
+  {f: 547, to: -70}, {f: 597, to: 70},
 ];
 const HOP_LEN = 16;
 const sx = (signed: number) => (signed >= 0 ? holeX(signed, 'right') : holeX(-signed, 'left'));
@@ -137,11 +139,11 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
   const R = project([PPS.handleX, gripY - 3, 0], cam, FOV, width, height);
   const right = a.signed >= 0;
   const pct = Math.abs(a.signed);
-  const labelsO = interpolate(f, [128, 140, c.outro.from - 6, c.outro.from + 4], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const labelsO = interpolate(f, [153, 165, c.outro.from - 6, c.outro.from + 4], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const inStep4 = f >= c.steps[3].from && f < c.steps[3].to;
   const plusTag = f >= c.steps[1].from && f < c.steps[1].to && HOPS.some((h) => f >= h.f && f < h.f + 22 && h.f >= c.steps[1].from);
-  const badge1 = c.steps[0].badge && f >= 222 && f < c.steps[0].to;
-  const b1 = spring({frame: f - 222, fps, config: {damping: 12}});
+  const badge1 = c.steps[0].badge && f >= 247 && f < c.steps[0].to;
+  const b1 = spring({frame: f - 247, fps, config: {damping: 12}});
 
   return (
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 35%, #4a4844 0%, #262523 45%, #0F0F0E 100%)', fontFamily: FONT, color: C.ink}}>
@@ -169,6 +171,16 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
         </ThreeCanvas>
       )}
 
+      {/* real footage first: people see it's something you hang on and pull */}
+      {c.clip && f < c.clip.until && (
+        <Sequence from={0} durationInFrames={c.clip.until}>
+          <AbsoluteFill style={{opacity: interpolate(f, [c.clip.until - 12, c.clip.until], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>
+            <OffthreadVideo src={staticFile(`clips/${c.clip.src}`)} startFrom={Math.round(c.clip.start * 30)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+            <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.8) 100%)'}} />
+          </AbsoluteFill>
+        </Sequence>
+      )}
+
       {/* load per arm */}
       <div style={{opacity: labelsO}}>
         <LoadLabel x={L.x} y={L.y} pct={right ? 100 - pct : pct} pulling={!right} tag={inStep4 ? 'WEAK SIDE' : undefined} />
@@ -186,6 +198,8 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
               <span style={{background: C.accent, borderRadius: 18, padding: '0 20px 8px', marginLeft: -20}}>{h.text.split('\n')[0]}</span>
               {'\n' + h.text.split('\n').slice(1).join('\n')}
             </span>
+          ) : h.panel ? (
+            <div style={{display: 'inline-block', background: 'rgba(15,15,14,.84)', borderRadius: 28, padding: '24px 36px 30px', marginLeft: -36}}>{h.text}</div>
           ) : (
             h.text
           )}
@@ -195,7 +209,7 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
       {/* steps */}
       {c.steps.map((s) => (f >= s.from - 2 && f < s.to + 2 ? <Header key={s.n} n={s.n} title={s.title} body={s.body} o={useFade(s.from, s.to, f)} local={f - s.from} /> : null))}
       {badge1 && (
-        <div style={{position: 'absolute', left: 80, top: 1560, transform: `scale(${0.6 + b1 * 0.4})`, transformOrigin: 'left center', opacity: Math.min(1, b1) * useFade(222, c.steps[0].to, f), background: C.accent, borderRadius: 20, padding: '10px 30px 16px', fontSize: 58, fontWeight: 800}}>
+        <div style={{position: 'absolute', left: 80, top: 1560, transform: `scale(${0.6 + b1 * 0.4})`, transformOrigin: 'left center', opacity: Math.min(1, b1) * useFade(247, c.steps[0].to, f), background: C.accent, borderRadius: 20, padding: '10px 30px 16px', fontSize: 58, fontWeight: 800}}>
           {c.steps[0].badge}
         </div>
       )}

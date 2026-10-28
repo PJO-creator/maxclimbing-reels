@@ -2,12 +2,13 @@
   "hook": [
     {
       "from": 0,
-      "to": 62,
-      "text": "Pull-ups won't get\nyou a one-arm\npull-up."
+      "to": 75,
+      "text": "Pull-ups won't get\nyou a one-arm\npull-up.",
+      "panel": true
     },
     {
-      "from": 62,
-      "to": 125,
+      "from": 75,
+      "to": 150,
       "text": "Shifting load will.\nHere's how.",
       "accent": true
     }
@@ -15,39 +16,44 @@
   "steps": [
     {
       "n": "1",
-      "from": 125,
-      "to": 260,
+      "from": 150,
+      "to": 285,
       "title": "Find your start.",
       "body": "The hardest hole where you\nstill get 5 clean pull-ups.",
       "badge": "Your start: 65%"
     },
     {
       "n": "2",
-      "from": 260,
-      "to": 410,
+      "from": 285,
+      "to": 435,
       "title": "5 reps?\nMove one hole.",
       "body": "+5% bodyweight on your pulling arm."
     },
     {
       "n": "3",
-      "from": 410,
-      "to": 515,
+      "from": 435,
+      "to": 540,
       "title": "Keep the bar level.",
       "body": "Tilts? Your assist arm is cheating."
     },
     {
       "n": "4",
-      "from": 515,
-      "to": 620,
+      "from": 540,
+      "to": 645,
       "title": "Weaker arm first.",
       "body": "Then match it on the other side."
     }
   ],
   "outro": {
-    "from": 620,
-    "to": 720,
+    "from": 645,
+    "to": 745,
     "title": "Save this for your\nnext pull session.",
     "body": "Progressive Pulling System",
     "sub": "Designed & made in Ghent by Max Climbing"
+  },
+  "clip": {
+    "src": "pps75_clean.mp4",
+    "start": 1.2,
+    "until": 80
   }
 }
