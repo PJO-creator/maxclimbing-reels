@@ -35,21 +35,15 @@
       "to": 540,
       "title": "Keep the bar level.",
       "body": "Tilts? Your assist arm is cheating."
-    },
-    {
-      "n": "4",
-      "from": 540,
-      "to": 645,
-      "title": "Weaker arm first.",
-      "body": "Then match it on the other side."
     }
   ],
   "outro": {
-    "from": 645,
-    "to": 745,
+    "from": 540,
+    "to": 640,
     "title": "Save this for your\nnext pull session.",
     "body": "Progressive Pulling System",
-    "sub": "Designed & made in Ghent by Max Climbing"
+    "sub": "Designed & made in Ghent by Max Climbing",
+    "image": "products/pps/Progressive_pulling_system_complete.png"
   },
   "clip": {
     "src": "pps75_clean.mp4",

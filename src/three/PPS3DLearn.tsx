@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {AbsoluteFill, Easing, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {ThreeCanvas} from '@remotion/three';
 import {useThree} from '@react-three/fiber';
 import * as THREE from 'three';
@@ -12,10 +12,10 @@ import {CamKey, V3, camAt, project} from './camera';
 export type Learn3DContent = {
   hook: {from: number; to: number; text: string; accent?: boolean; panel?: boolean}[];
   steps: {n: string; from: number; to: number; title: string; body: string; badge?: string}[];
-  outro: {from: number; to: number; title: string; body: string; sub: string};
+  outro: {from: number; to: number; title: string; body: string; sub: string; image?: string};
   clip?: {src: string; start: number; until: number};
 };
-export const LEARN3D_DURATION = 745;
+export const LEARN3D_DURATION = 640;
 const FOV = 32;
 
 // One continuous camera path for the whole reel
@@ -27,10 +27,8 @@ const KEYS: CamKey[] = [
   {f: 170, pos: [0, 2, 215], at: [0, -13, 0]}, // front view: bar high in frame, room for labels + text below
   {f: 285, pos: [5, 3, 214], at: [0, -13, 0]},
   {f: 435, pos: [-5, 4, 212], at: [0, -13, 0]},
-  {f: 540, pos: [4, 2, 214], at: [0, -13, 0]},
-  {f: 645, pos: [0, 2, 215], at: [0, -13, 0]},
-  {f: 695, pos: [-52, 14, 95], at: [-4, -7, 0]},
-  {f: 745, pos: [-40, 10, 78], at: [-2, -6, 0]},
+  {f: 545, pos: [0, 2, 215], at: [0, -13, 0]},
+  {f: 640, pos: [-30, 8, 170], at: [0, -10, 0]}, // slow drift while the real product photo takes over
 ];
 
 const Env: React.FC = () => {
@@ -59,8 +57,6 @@ const HOPS: Hop[] = [
   {f: 315, to: 70}, {f: 350, to: 75}, {f: 385, to: 80},
   // step 3: back to 75 for the tilt demo
   {f: 443, to: 75},
-  // step 4: weak side first (left 70), then strong side (right 70)
-  {f: 547, to: -70}, {f: 597, to: 70},
 ];
 const HOP_LEN = 16;
 const sx = (signed: number) => (signed >= 0 ? holeX(signed, 'right') : holeX(-signed, 'left'));
@@ -124,9 +120,9 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
   const a = anchorAt(f);
   const ay = anchorCaraY + a.lift;
 
-  // Step 3: assist side lifts (bar rotates about the anchor contact point), then levels again
+  // Step 3: assist arm pulls too hard -> its side drops (bar rotates about the anchor contact point), then levels
   const s3 = c.steps[2];
-  const tilt = interpolate(f, [s3.from + 22, s3.from + 40, s3.from + 70, s3.from + 92], [0, -7, -7, 0], {
+  const tilt = interpolate(f, [s3.from + 22, s3.from + 40, s3.from + 70, s3.from + 92], [0, 7, 7, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.inOut(Easing.cubic),
@@ -135,12 +131,17 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
 
   // labels under the grips (projected from 3D)
   const gripY = handleCaraY - CARA.h / 2 + CARA.wire - 13;
-  const L = project([-PPS.handleX, gripY - 3, 0], cam, FOV, width, height);
-  const R = project([PPS.handleX, gripY - 3, 0], cam, FOV, width, height);
+  // labels follow the grips when the bar tilts (rotate around the anchor contact point)
+  const rot = (x: number, y: number): V3 => {
+    const t = (tilt * Math.PI) / 180, dx = x - pivot[0], dy = y - pivot[1];
+    return [pivot[0] + dx * Math.cos(t) - dy * Math.sin(t), pivot[1] + dx * Math.sin(t) + dy * Math.cos(t), 0];
+  };
+  const L = project(rot(-PPS.handleX, gripY - 3), cam, FOV, width, height);
+  const R = project(rot(PPS.handleX, gripY - 3), cam, FOV, width, height);
   const right = a.signed >= 0;
   const pct = Math.abs(a.signed);
   const labelsO = interpolate(f, [153, 165, c.outro.from - 6, c.outro.from + 4], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const inStep4 = f >= c.steps[3].from && f < c.steps[3].to;
+  const inStep4 = !!c.steps[3] && f >= c.steps[3].from && f < c.steps[3].to;
   const plusTag = f >= c.steps[1].from && f < c.steps[1].to && HOPS.some((h) => f >= h.f && f < h.f + 22 && h.f >= c.steps[1].from);
   const badge1 = c.steps[0].badge && f >= 247 && f < c.steps[0].to;
   const b1 = spring({frame: f - 247, fps, config: {damping: 12}});
@@ -214,7 +215,21 @@ export const PPS3DLearn: React.FC<{content: Learn3DContent}> = ({content: c}) =>
         </div>
       )}
 
-      {/* outro */}
+      {/* outro: the real product, not the model */}
+      {c.outro.image && f >= c.outro.from - 2 && (() => {
+        const o = interpolate(f, [c.outro.from, c.outro.from + 10], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+        const pop = spring({frame: f - c.outro.from, fps, config: {damping: 18}});
+        const zoom = interpolate(f, [c.outro.from, c.outro.to], [1.1, 1.2]);
+        return (
+          <AbsoluteFill style={{opacity: o, background: 'radial-gradient(ellipse at 50% 35%, #3a3936 0%, #1c1b1a 55%, #0F0F0E 100%)'}}>
+            <div style={{position: 'absolute', left: 80, right: 80, top: 300, height: 780, borderRadius: 36, background: '#FFFFFF', overflow: 'hidden', transform: `scale(${0.92 + pop * 0.08})`, boxShadow: '0 30px 80px rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Img src={staticFile(c.outro.image)} style={{height: '100%', objectFit: 'contain', transform: `scale(${zoom})`}} />
+            </div>
+          </AbsoluteFill>
+        );
+      })()}
+
+      {/* outro text */}
       <div style={{position: 'absolute', left: 80, right: 120, top: 1180, opacity: interpolate(f, [c.outro.from + 4, c.outro.from + 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>
         <div style={{fontSize: 88, fontWeight: 800, letterSpacing: -2, lineHeight: 1.03, whiteSpace: 'pre-line'}}>{c.outro.title}</div>
         <div style={{fontSize: 52, fontWeight: 800, marginTop: 30}}>
