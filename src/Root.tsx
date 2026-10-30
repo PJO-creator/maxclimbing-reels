@@ -4,7 +4,9 @@ import {PPSReel, buildTimeline} from './PPSReel';
 import {PPSLearn, learnTimeline, LearnContent} from './PPSLearn';
 import {PPS3DTest, FLY_DURATION} from './three/PPS3DTest';
 import {PPS3DLearn, LEARN3D_DURATION, Learn3DContent} from './three/PPS3DLearn';
+import {EntralpiLearn, entralpiTimeline, EntralpiContent} from './EntralpiLearn';
 import pps from '../data/pps.json';
+import entralpi from '../data/entralpi-learn.json';
 import pps3dLearn from '../data/pps-3d-learn.json';
 import ppsLearn from '../data/pps-learn.json';
 
@@ -36,5 +38,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}
     <Composition id="pps-3d-learn" component={PPS3DLearn} durationInFrames={LEARN3D_DURATION} fps={30} width={1080} height={1920} defaultProps={{content: pps3dLearn as Learn3DContent}} />
+    {/* Entralpi: hangboard at your level */}
+    <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );

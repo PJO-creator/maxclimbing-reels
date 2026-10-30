@@ -1,0 +1,32 @@
+{
+  "scenes": {
+    "hook": {
+      "dur": 3.5,
+      "body": 10.6,
+      "text": "Most people start\nhangboarding\ntoo heavy."
+    },
+    "plate": {
+      "dur": 4.5,
+      "body": 14.0,
+      "title": "Keep your feet\non the plate.",
+      "body2": "It measures exactly how much\ngoes through your fingers."
+    },
+    "target": {
+      "dur": 6.5,
+      "body": 23.4,
+      "app": 18.1,
+      "title": "Pick your load.\nHang exactly that.",
+      "tag": "Target: 50 kg"
+    },
+    "log": {
+      "dur": 4.0,
+      "app": 92.0,
+      "title": "Every hang in kg.",
+      "sub": "Add load when you're ready,\nnot when it feels right."
+    },
+    "outro": {
+      "dur": 2.5,
+      "title": "Save this for your\nnext hangboard\nsession."
+    }
+  }
+}
