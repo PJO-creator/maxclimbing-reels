@@ -8,7 +8,8 @@ type Step =
   | {kind: 'find'; dur: number; n: string; title: string; body: string; path: number[]; stop: number}
   | {kind: 'progress'; dur: number; n: string; title: string; body: string; path: number[]}
   | {kind: 'tilt'; dur: number; n: string; title: string; body: string}
-  | {kind: 'mirror'; dur: number; n: string; title: string; body: string; pct: number};
+  | {kind: 'mirror'; dur: number; n: string; title: string; body: string; pct: number}
+  | {kind: 'combine'; dur: number; n: string; title: string; body: string; cards: {t: string; s: string}[]};
 
 export type LearnContent = {
   intro: AdContent['intro'];
@@ -77,6 +78,21 @@ const StepScene: React.FC<{s: Step; dur: number}> = ({s, dur}) => {
   } else if (s.kind === 'tilt') {
     const tilt = interpolate(f, [10, 28, 60, 85], [0, -10, -10, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.inOut(Easing.cubic)});
     diagram = <BarDiagram pct={75} tilt={tilt} />;
+  } else if (s.kind === 'combine') {
+    const pop = (i: number) => spring({frame: f - 14 - i * 10, fps, config: {damping: 14}});
+    diagram = (
+      <div style={{display: 'flex', alignItems: 'center', gap: 24, marginLeft: 20, marginTop: 60}}>
+        {s.cards.map((c, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <div style={{fontSize: 110, fontWeight: 800, color: C.accent, opacity: pop(i)}}>+</div>}
+            <div style={{width: 360, minHeight: 300, borderRadius: 28, background: '#1E1D1B', border: `3px solid ${i === 0 ? '#3A3A38' : C.accent}`, padding: '34px 30px', transform: `scale(${0.85 + pop(i) * 0.15})`, opacity: pop(i)}}>
+              <div style={{fontSize: 52, fontWeight: 800, lineHeight: 1.05, letterSpacing: -1}}>{c.t}</div>
+              <div style={{fontSize: 38, fontWeight: 600, lineHeight: 1.25, color: '#CFCBC3', marginTop: 20, whiteSpace: 'pre-line'}}>{c.s}</div>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    );
   } else if (s.kind === 'mirror') {
     // anchor jumps from left arm to right arm at the same load
     const flip = f > dur / 2;

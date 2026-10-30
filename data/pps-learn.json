@@ -52,12 +52,21 @@
       "body": "Tilts? Your assist arm is cheating."
     },
     {
-      "kind": "mirror",
-      "dur": 3.5,
+      "kind": "combine",
+      "dur": 4.5,
       "n": "4",
-      "title": "Weaker arm first.",
-      "body": "Then match it on the other side.",
-      "pct": 70
+      "title": "Combine it with\nweighted pull-ups.",
+      "body": "One builds the strength.\nThe other makes it one-arm.",
+      "cards": [
+        {
+          "t": "Weighted pull-ups",
+          "s": "2–5 heavy reps\nbuilds max force"
+        },
+        {
+          "t": "Lever bar",
+          "s": "shift load to\none arm in 5% steps"
+        }
+      ]
     }
   ],
   "outro": {
