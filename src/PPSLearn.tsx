@@ -29,9 +29,9 @@ export const learnTimeline = (c: LearnContent) => {
 };
 
 // Step through a list of percentages: hold on each, quick ease between
-const usePath = (path: number[], startAt: number, dur: number) => {
+const usePath = (path: number[], startAt: number, dur: number, endPad = 20) => {
   const f = useCurrentFrame();
-  const end = dur - 20;
+  const end = dur - endPad;
   const per = (end - startAt) / Math.max(1, path.length - 1);
   const idx = interpolate(f, [startAt, startAt + per * (path.length - 1)], [0, path.length - 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const i0 = Math.min(Math.floor(idx), path.length - 1);
@@ -58,7 +58,7 @@ const StepScene: React.FC<{s: Step; dur: number}> = ({s, dur}) => {
   let badge: React.ReactNode = null;
 
   if (s.kind === 'find' || s.kind === 'progress') {
-    const {pct, i0, frac, per} = usePath(s.path, 18, dur);
+    const {pct, i0, frac, per} = usePath(s.path, 18, dur, s.kind === 'find' ? 55 : 20);
     diagram = <BarDiagram pct={pct} tilt={0} />;
     if (s.kind === 'find') {
       const done = i0 >= s.path.length - 1;
