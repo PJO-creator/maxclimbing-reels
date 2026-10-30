@@ -17,7 +17,8 @@
       "body": 19.0,
       "app": 0.0,
       "title": "Choose your training.",
-      "sub": "A plan, a test,\nor build your own."
+      "sub": "A plan, a test,\nor build your own.",
+      "image": "products/entralpi/app-workouts.png"
     },
     "target": {
       "dur": 6.5,

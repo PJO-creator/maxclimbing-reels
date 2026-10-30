@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Easing, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, FONT, Out, Safe, sec, useIn} from './PPSReel';
 
 // Entralpi "how to" reel: hangboarding at your level instead of full bodyweight.
@@ -9,7 +9,7 @@ export type EntralpiContent = {
   scenes: {
     hook: Scene & {body: number};
     plate: Scene & {body: number; label: string};
-    plan: Scene & {body: number; app: number};
+    plan: Scene & {body: number; app: number; image?: string};
     target: Scene & {body: number; app: number; tag: string};
     log: Scene & {app: number};
     outro: Scene & {body: number};
@@ -45,13 +45,17 @@ const Body: React.FC<{start: number; zoom?: [number, number]; origin?: string; d
 };
 
 /** Full app screen inside a phone frame */
-const Phone: React.FC<{start: number; width: number; style?: React.CSSProperties}> = ({start, width, style}) => {
+const Phone: React.FC<{start: number; width: number; image?: string; style?: React.CSSProperties}> = ({start, width, image, style}) => {
   const bezel = Math.round(width * 0.035);
   const inner = width - bezel * 2;
   return (
     <div style={{width, padding: bezel, borderRadius: width * 0.12, background: '#0b0b0b', border: '2px solid #3a3a3a', boxShadow: '0 30px 90px rgba(0,0,0,.65)', ...style}}>
       <div style={{width: inner, height: (inner * 1600) / 720, borderRadius: width * 0.09, overflow: 'hidden'}}>
-        <OffthreadVideo src={staticFile(APP)} startFrom={sec(start)} muted style={{width: '100%', height: '100%', display: 'block'}} />
+        {image ? (
+          <Img src={staticFile(image)} style={{width: '100%', height: '100%', display: 'block'}} />
+        ) : (
+          <OffthreadVideo src={staticFile(APP)} startFrom={sec(start)} muted style={{width: '100%', height: '100%', display: 'block'}} />
+        )}
       </div>
     </div>
   );
@@ -142,7 +146,7 @@ export const EntralpiLearn: React.FC<{content: EntralpiContent}> = ({content: c}
           </Safe>
           <div style={{position: 'absolute', left: 0, right: 0, top: 600, display: 'flex', justifyContent: 'center'}}>
             <div style={usePop(6)}>
-              <Phone start={s.plan.app} width={480} />
+              <Phone start={s.plan.app} image={s.plan.image} width={480} />
             </div>
           </div>
         </Out>
