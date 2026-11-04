@@ -2,7 +2,7 @@
   "clip": "clips/rank/pullups_loop.mp4",
   "dur": 12.9,
   "hook": "Which is hardest\nto achieve?",
-  "ask": "Rank A–E in the comments",
+  "ask": "Rank A–E, hardest first",
   "items": [
     {"t": "30 pull-ups in a row", "s": "unbroken · full range"},
     {"t": "One-hand crimp at bodyweight", "s": "20 mm · 5 s"},
