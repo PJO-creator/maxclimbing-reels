@@ -26,7 +26,7 @@ export const RankReel: React.FC<{content: RankContent}> = ({content: c}) => {
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 28%, rgba(0,0,0,.2) 45%, rgba(0,0,0,.6) 100%)'}} />
 
       {/* Hook */}
-      <div style={{position: 'absolute', top: 250, left: 70, right: 70, opacity: hookP, transform: `translateY(${(1 - hookP) * -40}px)`}}>
+      <div style={{position: 'absolute', top: 340, left: 70, right: 70, opacity: hookP, transform: `translateY(${(1 - hookP) * -40}px)`}}>
         <div style={{display: 'inline-block', background: 'rgba(15,15,14,.86)', borderRadius: 28, padding: '20px 34px 26px'}}>
           <div style={{fontSize: 84, fontWeight: 800, lineHeight: 1.02, letterSpacing: -1.5, whiteSpace: 'pre-line'}}>{c.hook}</div>
           <div style={{fontSize: 46, fontWeight: 700, color: '#D6D2CA', marginTop: 12}}>{c.ask} ↓</div>
@@ -34,7 +34,7 @@ export const RankReel: React.FC<{content: RankContent}> = ({content: c}) => {
       </div>
 
       {/* List */}
-      <div style={{position: 'absolute', top: 590, left: 70, right: 70, display: 'flex', flexDirection: 'column', gap: 12}}>
+      <div style={{position: 'absolute', top: 680, left: 70, right: 70, display: 'flex', flexDirection: 'column', gap: 12}}>
         {c.items.map((it, i) => {
           const p = pop(8 + i * 6);
           return (
@@ -56,7 +56,7 @@ export const RankReel: React.FC<{content: RankContent}> = ({content: c}) => {
       </div>
 
       {/* End line */}
-      <div style={{position: 'absolute', top: 1285, left: 70, right: 70, opacity: endP, transform: `scale(${0.9 + endP * 0.1})`, transformOrigin: 'left center'}}>
+      <div style={{position: 'absolute', top: 1375, left: 70, right: 70, opacity: endP, transform: `scale(${0.9 + endP * 0.1})`, transformOrigin: 'left center'}}>
         <div style={{display: 'inline-block', background: C.accent, borderRadius: 20, padding: '12px 30px 16px', fontSize: 46, fontWeight: 800, lineHeight: 1.1, whiteSpace: 'pre-line'}}>{c.end.text}</div>
       </div>
     </AbsoluteFill>
