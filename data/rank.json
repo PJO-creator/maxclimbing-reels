@@ -1,0 +1,14 @@
+{
+  "clip": "clips/rank/pullups_loop.mp4",
+  "dur": 12.9,
+  "hook": "Which is hardest\nto achieve?",
+  "ask": "Rank A–E in the comments",
+  "items": [
+    {"t": "30 pull-ups in a row", "s": "unbroken · full range"},
+    {"t": "One-hand crimp at bodyweight", "s": "20 mm · 5 s"},
+    {"t": "One-arm pull-up", "s": "1 rep · full range"},
+    {"t": "45° sloper hang", "s": "both hands · 10 s"},
+    {"t": "One-finger hang", "s": "both hands · 20 mm · 5 s"}
+  ],
+  "end": {"at": 9.0, "text": "Follow for what our\n2027 comps reveal"}
+}

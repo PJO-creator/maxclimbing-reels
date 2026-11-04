@@ -9,6 +9,8 @@ import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
 import pps3dLearn from '../data/pps-3d-learn.json';
 import ppsLearn from '../data/pps-learn.json';
+import {RankReel, rankDuration, RankContent} from './RankReel';
+import rank from '../data/rank.json';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -39,6 +41,8 @@ export const RemotionRoot: React.FC = () => (
     {/* Version C: how-to in 3D (from CAD) */}
     <Composition id="pps-3d-learn" component={PPS3DLearn} durationInFrames={LEARN3D_DURATION} fps={30} width={1080} height={1920} defaultProps={{content: pps3dLearn as Learn3DContent}} />
     {/* Entralpi: hangboard at your level */}
+    {/* Engagement: rank these (one loop clip + overlay) */}
+    <Composition id="rank" component={RankReel} durationInFrames={rankDuration(rank as RankContent)} fps={30} width={1080} height={1920} defaultProps={{content: rank as RankContent}} />
     <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );
