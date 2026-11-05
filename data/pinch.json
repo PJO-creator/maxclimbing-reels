@@ -1,0 +1,12 @@
+{
+  "top": {"clip": "clips/pinch/dynamic.mp4", "len": 11.5, "label": "DYNAMIC"},
+  "bottom": {"clip": "clips/pinch/iso.mp4", "len": 9.0, "label": "ISOMETRIC"},
+  "series": "GRIP STRENGTH · PINCH",
+  "scenes": [
+    {"kind": "hook", "dur": 2.8, "title": "Pinch training:\nsqueeze or hold?"},
+    {"kind": "top", "dur": 3.6, "title": "Dynamic", "sub": "Full range.\nBuilds strength and muscle."},
+    {"kind": "bottom", "dur": 3.6, "title": "Isometric", "sub": "Strongest at the\nwidth you train."},
+    {"kind": "take", "dur": 4.8, "title": "Our take:", "lines": ["Build the base with dynamic.", "Get specific with isometrics."]},
+    {"kind": "outro", "dur": 2.4, "title": "Save this for your\nnext grip session."}
+  ]
+}
