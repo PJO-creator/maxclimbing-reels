@@ -1,0 +1,13 @@
+{
+  "clip": "clips/rank/pullups_loop.mp4",
+  "dur": 12.9,
+  "hook": "Which is hardest\nto achieve?",
+  "ask": "Rank A–E, hardest first",
+  "items": [
+    {"t": "30 pull-ups in a row", "s": "unbroken · full range"},
+    {"t": "Front lever", "s": "10 s · clean"},
+    {"t": "One-arm pull-up", "s": "1 rep · full range"},
+    {"t": "One-arm hang", "s": "30 s · on a bar"},
+    {"t": "Muscle-up", "s": "strict · no kip"}
+  ]
+}

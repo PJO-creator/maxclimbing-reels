@@ -9,7 +9,7 @@ export type RankContent = {
   hook: string;
   ask: string;
   items: {t: string; s: string}[];
-  end: {at: number; text: string};
+  end?: {at: number; text: string};
 };
 
 const LETTERS = 'ABCDEFGH';
@@ -18,7 +18,7 @@ export const RankReel: React.FC<{content: RankContent}> = ({content: c}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const pop = (d: number) => spring({frame: f - d, fps, config: {damping: 16}});
-  const endP = pop(sec(c.end.at));
+  const endP = c.end ? pop(sec(c.end.at)) : 0;
   const hookP = pop(0);
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
@@ -34,7 +34,7 @@ export const RankReel: React.FC<{content: RankContent}> = ({content: c}) => {
       </div>
 
       {/* List */}
-      <div style={{position: 'absolute', top: 680, left: 70, right: 70, display: 'flex', flexDirection: 'column', gap: 12}}>
+      <div style={{position: 'absolute', top: c.end ? 680 : 720, left: 70, right: 70, display: 'flex', flexDirection: 'column', gap: 12}}>
         {c.items.map((it, i) => {
           const p = pop(8 + i * 6);
           return (
@@ -56,9 +56,11 @@ export const RankReel: React.FC<{content: RankContent}> = ({content: c}) => {
       </div>
 
       {/* End line */}
+      {c.end && (
       <div style={{position: 'absolute', top: 1375, left: 70, right: 70, opacity: endP, transform: `scale(${0.9 + endP * 0.1})`, transformOrigin: 'left center'}}>
         <div style={{display: 'inline-block', background: C.accent, borderRadius: 20, padding: '12px 30px 16px', fontSize: 46, fontWeight: 800, lineHeight: 1.1, whiteSpace: 'pre-line'}}>{c.end.text}</div>
       </div>
+      )}
     </AbsoluteFill>
   );
 };

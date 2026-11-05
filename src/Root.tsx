@@ -11,6 +11,7 @@ import pps3dLearn from '../data/pps-3d-learn.json';
 import ppsLearn from '../data/pps-learn.json';
 import {RankReel, rankDuration, RankContent} from './RankReel';
 import rank from '../data/rank.json';
+import rankFitness from '../data/rank-fitness.json';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -43,6 +44,7 @@ export const RemotionRoot: React.FC = () => (
     {/* Entralpi: hangboard at your level */}
     {/* Engagement: rank these (one loop clip + overlay) */}
     <Composition id="rank" component={RankReel} durationInFrames={rankDuration(rank as RankContent)} fps={30} width={1080} height={1920} defaultProps={{content: rank as RankContent}} />
+    <Composition id="rank-fitness" component={RankReel} durationInFrames={rankDuration(rankFitness as RankContent)} fps={30} width={1080} height={1920} defaultProps={{content: rankFitness as RankContent}} />
     <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );
