@@ -61,6 +61,9 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
       <Half c={c.bottom} y={960} dim={dim('bottom')} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 956, height: 8, background: C.bg}} />
       {(sc.kind === 'top' || sc.kind === 'bottom') && (
+        <div style={{position: 'absolute', left: 0, width: 1080, top: sc.kind === 'top' ? 0 : 964, height: 956, boxShadow: `inset 0 0 0 8px ${C.accent}`, opacity: interpolate(lf, [0, 8], [0, 1], {extrapolateRight: 'clamp'})}} />
+      )}
+      {(sc.kind === 'top' || sc.kind === 'bottom') && (
         <>
           <Pill text={c.top.label} y={270} on={sc.kind === 'top' ? 1 : 0} />
           <Pill text={c.bottom.label} y={990} on={sc.kind === 'bottom' ? 1 : 0} />
@@ -78,9 +81,11 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
 
       {(sc.kind === 'top' || sc.kind === 'bottom') && (
         <div style={{position: 'absolute', left: 60, right: 60, top: sc.kind === 'top' ? 1120 : 400, ...appear}}>
-          <H size={96} style={{color: C.ink}}>{sc.title}</H>
+          <div style={{display: 'flex', alignItems: 'center', gap: 26}}>
+            <H size={96} style={{color: C.ink}}>{sc.title}</H>
+            <div style={{width: 92, height: 92, borderRadius: 46, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64, fontWeight: 800, lineHeight: 1}}>{sc.kind === 'top' ? '↑' : '↓'}</div>
+          </div>
           <div style={{fontSize: 54, fontWeight: 600, lineHeight: 1.2, color: '#D6D2CA', marginTop: 16, whiteSpace: 'pre-line'}}>{sc.sub}</div>
-          <div style={{fontSize: 80, fontWeight: 800, color: C.accent, marginTop: 6}}>{sc.kind === 'top' ? '↑' : '↓'}</div>
         </div>
       )}
 

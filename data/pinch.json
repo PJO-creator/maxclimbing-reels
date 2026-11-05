@@ -1,6 +1,6 @@
 {
   "top": {"clip": "clips/pinch/dynamic.mp4", "len": 11.5, "label": "DYNAMIC"},
-  "bottom": {"clip": "clips/pinch/iso.mp4", "len": 9.0, "label": "ISOMETRIC"},
+  "bottom": {"clip": "clips/pinch/iso.mp4", "len": 5.8, "label": "ISOMETRIC"},
   "series": "GRIP STRENGTH · PINCH",
   "scenes": [
     {"kind": "hook", "dur": 2.8, "title": "Pinch training:\nsqueeze or hold?"},
