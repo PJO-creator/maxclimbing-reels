@@ -94,7 +94,7 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
 
   // dim target per half, eased across scene changes
   const target = (k: Scene['kind'], half: 'top' | 'bottom') =>
-    k === 'top' ? (half === 'top' ? 0 : 0.72) : k === 'bottom' ? (half === 'bottom' ? 0 : 0.72) : k === 'hook' || k === 'intro' ? 0.15 : k === 'bridge' ? 0.4 : 0.62;
+    k === 'top' ? (half === 'top' ? 0 : 0.9) : k === 'bottom' ? (half === 'bottom' ? 0 : 0.9) : k === 'hook' || k === 'intro' ? 0.15 : k === 'bridge' ? 0.4 : 0.62;
   const prev = idx > 0 ? c.scenes[idx - 1].kind : sc.kind;
   const mix = interpolate(lf, [0, 10], [0, 1], {extrapolateRight: 'clamp'});
   const dim = (half: 'top' | 'bottom') => target(prev, half) + (target(sc.kind, half) - target(prev, half)) * mix;
