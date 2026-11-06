@@ -7,7 +7,8 @@ type Clip = {clip: string; len: number; label: string};
 type Scene =
   | {kind: 'hook' | 'outro'; dur: number; title: string}
   | {kind: 'top' | 'bottom'; dur: number; title: string; sub: string}
-  | {kind: 'take'; dur: number; title: string; lines: string[]};
+  | {kind: 'take'; dur: number; title: string; lines: string[]}
+  | {kind: 'intro'; dur: number; clip: string; title: string; title2: string; label: string; zoomAt: number; zoomDur: number; target: {x: number; y: number}; to: {x: number; y: number}; scale: number};
 export type SplitContent = {top: Clip; bottom: Clip; series: string; scenes: Scene[]};
 
 export const splitTimeline = (c: SplitContent) => {
@@ -37,6 +38,48 @@ const H: React.FC<{children: React.ReactNode; size?: number; style?: React.CSSPr
   <div style={{fontSize: size, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5, whiteSpace: 'pre-line', ...style}}>{children}</div>
 );
 
+// Full-screen climbing clip, hook on top, radar-style zoom onto the pinch hand.
+const Intro: React.FC<{sc: Extract<Scene, {kind: 'intro'}>; lf: number; fps: number; series: string}> = ({sc, lf, fps, series}) => {
+  const z0 = sec(sc.zoomAt);
+  const zp = interpolate(lf, [z0, z0 + sec(sc.zoomDur)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: (t) => 1 - Math.pow(1 - t, 3)});
+  const dx = sc.to.x - sc.target.x, dy = sc.to.y - sc.target.y;
+  const cx = sc.target.x + dx * zp, cy = sc.target.y + dy * zp;
+  const seen = interpolate(lf, [z0 - 8, z0], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const lock = spring({frame: lf - z0 - sec(sc.zoomDur) + 4, fps, config: {damping: 11}});
+  const size = 620 - 330 * zp;
+  const L = 70; // bracket arm
+  const t1 = spring({frame: lf - 2, fps, config: {damping: 16}});
+  const t2 = spring({frame: lf - z0 - sec(sc.zoomDur) + 2, fps, config: {damping: 16}});
+  const corner = (sx: number, sy: number, k: number) => (
+    <path key={k} d={`M ${cx + sx * size / 2} ${cy + sy * (size / 2 - L)} L ${cx + sx * size / 2} ${cy + sy * size / 2} L ${cx + sx * (size / 2 - L)} ${cy + sy * size / 2}`} stroke={C.accent} strokeWidth={10} fill="none" strokeLinecap="square" />
+  );
+  const blink = lock > 0.1 ? 1 : Math.floor(lf / 3) % 2 ? 0.55 : 1;
+  return (
+    <AbsoluteFill style={{overflow: 'hidden', backgroundColor: C.bg}}>
+      <AbsoluteFill style={{transformOrigin: `${sc.target.x}px ${sc.target.y}px`, transform: `translate(${dx * zp}px, ${dy * zp}px) scale(${1 + (sc.scale - 1) * zp})`}}>
+        <OffthreadVideo src={staticFile(sc.clip)} muted style={{width: 1080, height: 1920}} />
+      </AbsoluteFill>
+      <AbsoluteFill style={{background: `radial-gradient(circle at ${cx}px ${cy}px, rgba(0,0,0,0) ${size * 0.55}px, rgba(0,0,0,${0.45 * zp}) ${size * 0.9}px)`}} />
+      <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: seen * blink}}>
+        {corner(-1, -1, 0)}{corner(1, -1, 1)}{corner(-1, 1, 2)}{corner(1, 1, 3)}
+        <line x1={cx - 22} y1={cy} x2={cx + 22} y2={cy} stroke={C.accent} strokeWidth={5} />
+        <line x1={cx} y1={cy - 22} x2={cx} y2={cy + 22} stroke={C.accent} strokeWidth={5} />
+        <circle cx={cx} cy={cy} r={size * 0.62 + (1 - lock) * 60} stroke={C.accent} strokeWidth={4} fill="none" opacity={0.6 * lock} />
+      </svg>
+      <div style={{position: 'absolute', left: cx + size / 2 - 40, top: cy + size / 2 + 22, opacity: lock, transform: `scale(${0.7 + lock * 0.3})`, transformOrigin: 'left top', background: C.accent, borderRadius: 14, padding: '6px 22px 10px', fontSize: 46, fontWeight: 800, letterSpacing: 3}}>{sc.label}</div>
+      <div style={{position: 'absolute', left: 60, right: 60, top: 260, opacity: t1, transform: `translateY(${(1 - t1) * -30}px)`}}>
+        <div style={{display: 'inline-block', background: 'rgba(15,15,14,.88)', borderRadius: 28, padding: '18px 34px 26px'}}>
+          <div style={{fontSize: 32, fontWeight: 800, letterSpacing: 3, color: '#BDB8AF', marginBottom: 8}}>{series}</div>
+          <H size={86}>{sc.title}</H>
+          <div style={{height: t2 * 104, overflow: 'hidden', paddingTop: 8}}>
+            <H size={86} style={{opacity: t2}}><span style={{background: C.accent, borderRadius: 12, padding: '0 14px 4px', marginLeft: -6}}>{sc.title2}</span></H>
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -50,7 +93,7 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
 
   // dim target per half, eased across scene changes
   const target = (k: Scene['kind'], half: 'top' | 'bottom') =>
-    k === 'top' ? (half === 'top' ? 0 : 0.72) : k === 'bottom' ? (half === 'bottom' ? 0 : 0.72) : k === 'hook' ? 0.15 : 0.62;
+    k === 'top' ? (half === 'top' ? 0 : 0.72) : k === 'bottom' ? (half === 'bottom' ? 0 : 0.72) : k === 'hook' || k === 'intro' ? 0.15 : 0.62;
   const prev = idx > 0 ? c.scenes[idx - 1].kind : sc.kind;
   const mix = interpolate(lf, [0, 10], [0, 1], {extrapolateRight: 'clamp'});
   const dim = (half: 'top' | 'bottom') => target(prev, half) + (target(sc.kind, half) - target(prev, half)) * mix;
@@ -69,6 +112,8 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
           <Pill text={c.bottom.label} y={990} on={sc.kind === 'bottom' ? 1 : 0} />
         </>
       )}
+
+      {sc.kind === 'intro' && <Intro sc={sc} lf={lf} fps={fps} series={c.series} />}
 
       {sc.kind === 'hook' && (
         <div style={{position: 'absolute', left: 60, right: 60, top: 760, ...appear}}>
