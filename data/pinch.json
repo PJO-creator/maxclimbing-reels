@@ -13,22 +13,27 @@
   "scenes": [
     {
       "kind": "intro",
-      "dur": 6.5,
+      "dur": 6.6,
       "clip": "clips/pinch/climb.mp4",
       "title": "Can't hold pinches?",
       "title2": "Train your thumb.",
       "label": "PINCH",
-      "zoomAt": 4.9,
+      "zoomAt": 3.5,
       "zoomDur": 0.9,
       "target": {
-        "x": 560,
-        "y": 590
+        "x": 556,
+        "y": 575
       },
       "to": {
         "x": 540,
         "y": 1060
       },
       "scale": 2.0
+    },
+    {
+      "kind": "bridge",
+      "dur": 2.8,
+      "title": "2 popular ways\nto train it:"
     },
     {
       "kind": "top",

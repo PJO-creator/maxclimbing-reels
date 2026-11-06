@@ -8,6 +8,7 @@ type Scene =
   | {kind: 'hook' | 'outro'; dur: number; title: string}
   | {kind: 'top' | 'bottom'; dur: number; title: string; sub: string}
   | {kind: 'take'; dur: number; title: string; lines: string[]}
+  | {kind: 'bridge'; dur: number; title: string}
   | {kind: 'intro'; dur: number; clip: string; title: string; title2: string; label: string; zoomAt: number; zoomDur: number; target: {x: number; y: number}; to: {x: number; y: number}; scale: number};
 export type SplitContent = {top: Clip; bottom: Clip; series: string; scenes: Scene[]};
 
@@ -55,7 +56,7 @@ const Intro: React.FC<{sc: Extract<Scene, {kind: 'intro'}>; lf: number; fps: num
   );
   const blink = lock > 0.1 ? 1 : Math.floor(lf / 3) % 2 ? 0.55 : 1;
   return (
-    <AbsoluteFill style={{overflow: 'hidden', backgroundColor: C.bg}}>
+    <AbsoluteFill style={{overflow: 'hidden', backgroundColor: C.bg, opacity: interpolate(lf, [sec(sc.dur) - 14, sec(sc.dur)], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>
       <AbsoluteFill style={{transformOrigin: `${sc.target.x}px ${sc.target.y}px`, transform: `translate(${dx * zp}px, ${dy * zp}px) scale(${1 + (sc.scale - 1) * zp})`}}>
         <OffthreadVideo src={staticFile(sc.clip)} muted style={{width: 1080, height: 1920}} />
       </AbsoluteFill>
@@ -93,7 +94,7 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
 
   // dim target per half, eased across scene changes
   const target = (k: Scene['kind'], half: 'top' | 'bottom') =>
-    k === 'top' ? (half === 'top' ? 0 : 0.72) : k === 'bottom' ? (half === 'bottom' ? 0 : 0.72) : k === 'hook' || k === 'intro' ? 0.15 : 0.62;
+    k === 'top' ? (half === 'top' ? 0 : 0.72) : k === 'bottom' ? (half === 'bottom' ? 0 : 0.72) : k === 'hook' || k === 'intro' ? 0.15 : k === 'bridge' ? 0.4 : 0.62;
   const prev = idx > 0 ? c.scenes[idx - 1].kind : sc.kind;
   const mix = interpolate(lf, [0, 10], [0, 1], {extrapolateRight: 'clamp'});
   const dim = (half: 'top' | 'bottom') => target(prev, half) + (target(sc.kind, half) - target(prev, half)) * mix;
@@ -113,6 +114,19 @@ export const SplitReel: React.FC<{content: SplitContent}> = ({content: c}) => {
         </>
       )}
 
+      {sc.kind === 'bridge' && (
+        <>
+          {[0, 1].map((i) => {
+            const q = pop(10 + i * 8);
+            return <div key={i} style={{opacity: q, transform: `scale(${0.8 + q * 0.2})`, transformOrigin: 'left top'}}><Pill text={i ? c.bottom.label : c.top.label} y={i ? 990 : 270} on={1} /></div>;
+          })}
+          <div style={{position: 'absolute', left: 60, right: 60, top: 640, ...appear}}>
+            <div style={{display: 'inline-block', background: 'rgba(15,15,14,.92)', borderRadius: 28, padding: '22px 36px 30px'}}>
+              <H size={84}>{sc.title}</H>
+            </div>
+          </div>
+        </>
+      )}
       {sc.kind === 'intro' && <Intro sc={sc} lf={lf} fps={fps} series={c.series} />}
 
       {sc.kind === 'hook' && (
