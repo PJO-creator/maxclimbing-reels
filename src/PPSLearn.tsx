@@ -129,7 +129,7 @@ const Outro: React.FC<{c: LearnContent['outro']; dur: number}> = ({c, dur}) => {
         <Img src={staticFile(c.image)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${pan})`}} />
       </div>
       <div style={{position: 'absolute', top: 280, left: 80, right: 120, color: C.bg}}>
-        <div style={{...useIn(0), fontSize: 96, fontWeight: 800, lineHeight: 1.03, letterSpacing: -2, whiteSpace: 'pre-line'}}>{c.title}</div>
+        {c.title && <div style={{...useIn(0), fontSize: 96, fontWeight: 800, lineHeight: 1.03, letterSpacing: -2, whiteSpace: 'pre-line'}}>{c.title}</div>}
         <div style={{...useIn(10), fontSize: 52, fontWeight: 700, color: C.accent, marginTop: 26}}>{c.body}</div>
       </div>
     </AbsoluteFill>

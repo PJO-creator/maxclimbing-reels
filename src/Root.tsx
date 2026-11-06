@@ -9,6 +9,7 @@ import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
 import pps3dLearn from '../data/pps-3d-learn.json';
 import ppsLearn from '../data/pps-learn.json';
+import ppsLearnWeb from '../data/pps-learn-web.json';
 import {RankReel, rankDuration, RankContent} from './RankReel';
 import rank from '../data/rank.json';
 import rankFitness from '../data/rank-fitness.json';
@@ -39,6 +40,8 @@ export const RemotionRoot: React.FC = () => (
       defaultProps={{content: ppsLearn as LearnContent}}
       calculateMetadata={({props}) => ({durationInFrames: learnTimeline(props.content).total})}
     />
+    {/* Version B2 for the product page: no "save this" line */}
+    <Composition id="pps-learn-web" component={PPSLearn} durationInFrames={learnTimeline(ppsLearnWeb as LearnContent).total} fps={30} width={1080} height={1920} defaultProps={{content: ppsLearnWeb as LearnContent}} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}
