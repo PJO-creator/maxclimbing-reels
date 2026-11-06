@@ -4,19 +4,25 @@ Living file. After each reel: log the numbers at ~72 h (and 7 days if it's still
 
 ## 1. Performance log
 
-| Reel | Format | Posted as | Views | Saves | Comments | Follows | Sales / notes |
-|---|---|---|---|---|---|---|---|
-| PPS B (how-to) | how-to steps, real clip + diagram | trial | 3,946 | 30 | – | 9 | 12 bio taps |
-| PPS C (3D how-to) | 3D, felt like an ad | trial | 5,195 | 30 | – | 1 | 8 bio taps, 1 sale |
-| **PPS B2** (how-to + weighted pull-ups step) | how-to steps, goal hook "one-arm pull-up" | **regular** | **100k+** | 628 (at 45k) | – | – | **~30 PPS sold**, stock ran out |
-| Entralpi "train at your level" | how-to, footage + app | trial | ? | ? | ? | ? | felt too static |
-| Rank: climbing (A–E) | ranking list over loop clip | trial | ~800 (day 1) | – | 0 → seeded | – | niche, slow start |
-| Rank: fitness (A–E) | ranking list over loop clip | trial | ? | – | many | few | lots of comments, few likes/follows |
-| Pinch v2 (split, no hook clip) | split-screen A vs B | trial | ~1,000 (day 1) | ? | ? | ? | weak hook (method question) |
-| Pinch v6 (climb hook + radar zoom) | hook clip + split | trial | | | | | |
+Source: Metricool (Instagram), pulled 2026-11-06. View rate = % of views that watched > 3 s (the hook metric).
+
+| Posted | Reel | Format | Views | Reach | View rate | Avg watch | Likes | Comments | Saves | Shares | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 27 Oct | PPS A (product ad) | product ad | 1,993 | 1,646 | 68.7% | 9.4 s | 23 | 0 | 4 | 11 | ad = few saves |
+| 27 Oct | PPS B (how-to) | how-to steps | 6,637 | 5,335 | 71.1% | 12.8 s | 79 | 1 | 69 | 43 | 9 follows, 12 bio taps |
+| 28 Oct | PPS C (3D how-to) | 3D how-to | 7,015 | 5,629 | 72.4% | 12.1 s | 78 | 0 | 62 | 15 | felt like an ad, 1 follow |
+| **30 Oct** | **PPS B2** (how-to + weighted pull-ups) | how-to steps | **101,118** | 74,492 | 69.9% | **13.3 s** | 1,518 | 29 | **1,311** | **763** | ~30 PPS sold; caption "Send this to the friend who's been almost there for 2 years" |
+| 30 Oct | Entralpi "train at your level" | how-to, footage + app | 2,152 | 1,768 | 56.5% | 7.4 s | 15 | 0 | 9 | 1 | weaker hook, felt static |
+| 4 Nov | Rank: climbing A–E | ranking over loop | 1,562 | 974 | 54.6% | 8.7 s | 6 | 3 | 4 | 5 | niche |
+| 5 Nov | Rank: fitness A–E | ranking over loop | 962 | 661 | 46.0% | 7.5 s | 6 | 9 | 2 | 0 | comments but lowest hook rate |
+| 5 Nov | Pinch v2 (split, no hook clip) | split A vs B | ~1,000 | | | | | | | | not in Metricool yet |
+| 6 Nov | Pinch v6 (climb hook + radar zoom) | hook clip + split | | | | | | | | | |
 
 ## 2. What we've learned so far
 
+- **Hook rate tells the story.** All PPS reels hold 69–72% past 3 s; Entralpi 56%, rankings 46–55%. Start with a recognisable action + a goal.
+- **Shares drive the big one.** B2 got 763 shares (others: 1–43). Its caption opened with "Send this to the friend who's been almost there for 2 years". Use a share prompt aimed at a specific friend.
+- **Saves follow protocols.** B2 1,311 saves, B 69, C 62 vs rankings 2–4 and Entralpi 9.
 - **Goal hooks beat method hooks.** "How to train for a one-arm pull-up" (a goal people want) >> "Pinch: squeeze or hold?" (a question few ask).
 - **Informative beats ad-like.** B (teaching) got 9 follows, C (felt like an ad) got 1, with more views.
 - **Follows need a future.** One-off discussion reels (ranking) get comments but no follows. How-tos and series give a reason to follow.
