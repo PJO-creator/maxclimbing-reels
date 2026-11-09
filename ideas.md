@@ -4,19 +4,30 @@ Living file. After each reel: log the numbers at ~72 h (and 7 days if it's still
 
 ## 1. Performance log
 
-Source: Metricool (Instagram), pulled 2026-11-06. View rate = % of views that watched > 3 s (the hook metric).
+Source: Metricool (Instagram), pulled 2026-11-09 (previous pull 2026-11-06). View rate = % of views that watched > 3 s (the hook metric). Length = video length (from TikTok upload).
 
 | Posted | Reel | Format | Views | Reach | View rate | Avg watch | Likes | Comments | Saves | Shares | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 27 Oct | PPS A (product ad) | product ad | 1,993 | 1,646 | 68.7% | 9.4 s | 23 | 0 | 4 | 11 | ad = few saves |
-| 27 Oct | PPS B (how-to) | how-to steps | 6,637 | 5,335 | 71.1% | 12.8 s | 79 | 1 | 69 | 43 | 9 follows, 12 bio taps |
-| 28 Oct | PPS C (3D how-to) | 3D how-to | 7,015 | 5,629 | 72.4% | 12.1 s | 78 | 0 | 62 | 15 | felt like an ad, 1 follow |
-| **30 Oct** | **PPS B2** (how-to + weighted pull-ups) | how-to steps | **101,118** | 74,492 | 69.9% | **13.3 s** | 1,518 | 29 | **1,311** | **763** | ~30 PPS sold; caption "Send this to the friend who's been almost there for 2 years" |
-| 30 Oct | Entralpi "train at your level" | how-to, footage + app | 2,152 | 1,768 | 56.5% | 7.4 s | 15 | 0 | 9 | 1 | weaker hook, felt static |
-| 4 Nov | Rank: climbing A–E | ranking over loop | 1,562 | 974 | 54.6% | 8.7 s | 6 | 3 | 4 | 5 | niche |
-| 5 Nov | Rank: fitness A–E | ranking over loop | 962 | 661 | 46.0% | 7.5 s | 6 | 9 | 2 | 0 | comments but lowest hook rate |
-| 5 Nov | Pinch v2 (split, no hook clip) | split A vs B | ~1,000 | | | | | | | | not in Metricool yet |
-| 6 Nov | Pinch v6 (climb hook + radar zoom) | hook clip + split | | | | | | | | | |
+| 27 Oct | PPS A (product ad) | product ad | 2,041 | 1,677 | 68.4% | 9.3 s | 24 | 0 | 4 | 11 | ad = few saves |
+| 27 Oct | PPS B (how-to) | how-to steps | 7,113 | 5,717 | 71.0% | 12.8 s | 84 | 1 | 71 | 44 | 9 follows, 12 bio taps |
+| 28 Oct | PPS C (3D how-to) | 3D how-to | 7,481 | 5,894 | 72.0% | 12.1 s | 84 | 0 | 77 | 17 | felt like an ad, 1 follow |
+| **30 Oct** | **PPS B2** (how-to + weighted pull-ups) | how-to steps | **110,371** | 81,143 | 69.8% | **13.2 s** (25 s long) | 1,653 | 30 | **1,408** | **836** | ~30 PPS sold; caption "Send this to the friend who's been almost there for 2 years"; still growing (+9k since 6 Nov) |
+| 30 Oct | Entralpi "train at your level" | how-to, footage + app | 2,162 | 1,772 | 56.7% | 7.4 s | 15 | 0 | 9 | 1 | weaker hook, felt static |
+| 4 Nov | Rank: climbing A–E | ranking over loop | 4,993 | 2,942 | 56.3% | 10.2 s | 28 | 4 | 14 | 11 | late grower: 1.6k → 5.0k between day 2 and day 5 |
+| 5 Nov | Rank: fitness A–E | ranking over loop | 1,929 | 1,253 | 47.0% | 9.5 s (12 s long) | 21 | 22 | 6 | 3 | most comments of the week, lowest hook rate |
+| 5 Nov | Pinch v2 (split, no hook clip) | split A vs B | 2,496 | 2,041 | 58.6% | 7.1 s (17 s long) | 28 | 0 | 31 | 4 | caption names the gear |
+| 6 Nov | Pinch v6 (climb hook + radar zoom) | hook clip + split | 2,605 | 2,161 | 54.5% | 8.5 s (26 s long) | 32 | 2 | 17 | 4 | hook clip did not lift view rate vs v2 |
+
+**Followers (Instagram):** 3,560 (4 Nov) → 3,613 (8 Nov). Week 2–7 Nov: +122 gained, −6 lost. (31 Oct alone: +149, the B2 spike.)
+
+### TikTok (reposts, pulled 2026-11-09)
+
+| Posted | Reel | Length | Views | Reach | Avg watch | Likes | Comments | Shares |
+|---|---|---|---|---|---|---|---|---|
+| 5 Nov | Rank: fitness A–E | 12 s | 2 | 2 | 2 s | 1 | 0 | 0 |
+| 5 Nov | PPS B2 (one-arm pull-up how-to) | 25 s | 78 | 66 | 8 s | 3 | 0 | 0 |
+| 5 Nov | Pinch v2 | 17 s | 84 | 72 | 4 s | 3 | 0 | 0 |
+| 6 Nov | Pinch v6 | 26 s | 88 | 78 | 5 s | 5 | 0 | 0 |
 
 ## 2. What we've learned so far
 
@@ -32,6 +43,9 @@ Source: Metricool (Instagram), pulled 2026-11-06. View rate = % of views that wa
 - **Pace:** too fast feels "ADHD". Give each idea ~4–5 s, use bridges ("2 popular ways:") between parts.
 - **Broad topics reach further.** Pull-ups/OAP reach fitness people too; crimps/slopers only climbers. Both have a place: broad for reach, niche for buyers.
 - **Regular reels can go big too.** B2 hit 100k as a normal reel. Trial reels = testing tool, not a reach trick. Keep auto-share off.
+- **A climbing hook clip alone doesn't fix the hook.** Pinch v6 (climb clip + radar zoom) held 54.5% past 3 s vs 58.6% for v2 without it, and got fewer saves (17 vs 31). The topic ("pinch: squeeze or hold?") is the limit, not the first frame.
+- **TikTok doesn't carry over (yet).** B2 = 110k on Instagram, 78 views as a TikTok repost; all 4 reposts got 2–88 views, 0 shares. Reposting gives no TikTok distribution on this account so far.
+- **Check rankings again at day 5–7.** Climbing ranking went 1.6k → 5.0k views between day 2 and day 5; how-tos peak faster.
 - **Be honest in claims.** Only promise what we'll actually measure; say "our take", not "the only way".
 
 ## 3. Idea backlog (topic × format)
