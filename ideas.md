@@ -48,6 +48,15 @@ Source: Metricool (Instagram), pulled 2026-11-09 (previous pull 2026-11-06). Vie
 - **Check rankings again at day 5–7.** Climbing ranking went 1.6k → 5.0k views between day 2 and day 5; how-tos peak faster.
 - **Be honest in claims.** Only promise what we'll actually measure; say "our take", not "the only way".
 
+### From watching others (Lattice, Nov 2026 – Pieterjan's observation)
+- **Real ascents score best.** Real climbing on real walls beats everything else.
+- **Explanation videos do less, but still well.**
+- **Products and static shots don't score.**
+- **Climbers with analytics drawn on the footage work very well** (numbers/lines on the climber). Fits our brand: measured strength.
+- **Technique explained on the wall with a voice-over** works.
+
+Implication for us: real footage of climbers + real numbers overlaid (testing station, Max Games, comps, Entralpi live kg) is our unique angle. Avoid product-only and static scenes.
+
 ## 3. Idea backlog (topic × format)
 
 | Topic | A vs B (split) | How-to (steps) | Myth / mistake | Test yourself |
@@ -73,6 +82,12 @@ Plus:
 - **"Things climbers say"**: "I'll just do one more attempt" → timelapse of 20 attempts.
 - **Expectation vs reality**: "My training plan" (neat schedule) vs "My actual week" (chaos).
 - **The forearm pump** – exaggerated reaction after a long hang, deadpan caption.
+
+### Analytics overlays (high priority)
+- **Testing station / Max Games**: climber pulls → live number + % bodyweight + rank among gym climbers drawn on the footage.
+- **Entralpi hang**: live kg on the climber, target line, "this is 62% of bodyweight".
+- **Ascent breakdown**: wall angle, hold type labels, time per move, hip path traced on the climber.
+- **Two climbers, same boulder**: overlay where they differ (hips, reach, tempo).
 
 ### Cinematic / spectacular
 - **Slow-motion dyno or cut-loose** on the shop wall (phone slo-mo, 120/240 fps).
