@@ -17,6 +17,8 @@ import {SplitReel, splitTimeline, SplitContent} from './SplitReel';
 import pinch from '../data/pinch.json';
 import {MuscleTest, MuscleTestContent, muscleTestDuration} from './MuscleOverlay';
 import pronTest from '../data/pron-test.json';
+import {ElbowReel, elbowParts, ElbowContent} from './ElbowReel';
+import elbow from '../data/elbow.json';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -55,6 +57,7 @@ export const RemotionRoot: React.FC = () => (
     {/* Split-screen how-to: pinch dynamic vs isometric */}
     <Composition id="pinch" component={SplitReel} durationInFrames={splitTimeline(pinch as SplitContent).total} fps={30} width={1080} height={1920} defaultProps={{content: pinch as SplitContent}} />
     <Composition id="pron-test" component={MuscleTest} durationInFrames={muscleTestDuration(pronTest as unknown as MuscleTestContent)} fps={30} width={1080} height={1920} defaultProps={{content: pronTest as unknown as MuscleTestContent}} />
+    <Composition id="elbow" component={ElbowReel} durationInFrames={elbowParts(elbow as unknown as ElbowContent).total} fps={30} width={1080} height={1920} defaultProps={{content: elbow as unknown as ElbowContent}} />
     <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );

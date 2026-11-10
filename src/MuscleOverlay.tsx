@@ -97,11 +97,11 @@ export const MuscleLayer: React.FC<{pt: TrackPt; muscles: Muscle[]; reveal: numb
 };
 
 // ---- sequence of tracked segments ----
-type Segment = {clip: string; track: TrackPt[]; muscles: Muscle[]; title: string; sub: string};
+export type Segment = {clip: string; track: TrackPt[]; muscles: Muscle[]; title: string; sub: string};
 export type MuscleTestContent = {zoom: number; origin: string; segments: Segment[]};
 export const muscleTestDuration = (c: MuscleTestContent) => c.segments.reduce((a, s) => a + s.track.length, 0);
 
-const SegmentView: React.FC<{s: Segment; zoom: number; origin: string}> = ({s, zoom, origin}) => {
+export const SegmentView: React.FC<{s: Segment; zoom: number; origin: string}> = ({s, zoom, origin}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const pt = s.track[Math.min(f, s.track.length - 1)];
