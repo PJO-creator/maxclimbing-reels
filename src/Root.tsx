@@ -15,7 +15,7 @@ import rank from '../data/rank.json';
 import rankFitness from '../data/rank-fitness.json';
 import {SplitReel, splitTimeline, SplitContent} from './SplitReel';
 import pinch from '../data/pinch.json';
-import {MuscleTest, MuscleTestContent} from './MuscleOverlay';
+import {MuscleTest, MuscleTestContent, muscleTestDuration} from './MuscleOverlay';
 import pronTest from '../data/pron-test.json';
 
 export const RemotionRoot: React.FC = () => (
@@ -54,7 +54,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="rank-fitness" component={RankReel} durationInFrames={rankDuration(rankFitness as RankContent)} fps={30} width={1080} height={1920} defaultProps={{content: rankFitness as RankContent}} />
     {/* Split-screen how-to: pinch dynamic vs isometric */}
     <Composition id="pinch" component={SplitReel} durationInFrames={splitTimeline(pinch as SplitContent).total} fps={30} width={1080} height={1920} defaultProps={{content: pinch as SplitContent}} />
-    <Composition id="pron-test" component={MuscleTest} durationInFrames={(pronTest as unknown as MuscleTestContent).track.length} fps={30} width={1080} height={1920} defaultProps={{content: pronTest as unknown as MuscleTestContent}} />
+    <Composition id="pron-test" component={MuscleTest} durationInFrames={muscleTestDuration(pronTest as unknown as MuscleTestContent)} fps={30} width={1080} height={1920} defaultProps={{content: pronTest as unknown as MuscleTestContent}} />
     <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );

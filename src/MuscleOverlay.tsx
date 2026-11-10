@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, FONT} from './PPSReel';
 
 // Schematic "x-ray" muscles drawn along a tracked forearm (elbow -> wrist).
@@ -13,6 +13,8 @@ export type Muscle = {
   active: boolean;
   labelSide: 'up' | 'down';
   labelAlign?: 'left' | 'right';
+  base?: 'forearm' | 'upper';
+  labelDist?: number;
 };
 
 const FOREARM_W = 92; // px, side view
@@ -40,6 +42,13 @@ export const MuscleLayer: React.FC<{pt: TrackPt; muscles: Muscle[]; reveal: numb
   let nx = -uy, ny = ux;
   if (ny > 0) { nx = -nx; ny = -ny; }
   const at = (t: number, o: number): [number, number] => [ex + dx * t + nx * o * FW / 2, ey + dy * t + ny * o * FW / 2];
+  // upper arm: elbow -> approx. shoulder (straight up, slightly back), normal points forward (+x)
+  const [sx, sy] = map([pt.e[0] - 35, pt.e[1] - 330]);
+  const udx = sx - ex, udy = sy - ey, ul = Math.hypot(udx, udy) || 1;
+  let unx = -udy / ul, uny = udx / ul;
+  if (unx < 0) { unx = -unx; uny = -uny; }
+  const atU = (t: number, o: number): [number, number] => [ex + udx * t + unx * o * FW * 1.3 / 2, ey + udy * t + uny * o * FW * 1.3 / 2];
+  const P = (m: Muscle) => (m.base === 'upper' ? atU : at);
   return (
     <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
       <defs>
@@ -49,9 +58,9 @@ export const MuscleLayer: React.FC<{pt: TrackPt; muscles: Muscle[]; reveal: numb
         </filter>
       </defs>
       {muscles.map((m, i) => {
-        const a = at(m.from[0], m.from[1]);
-        const b = at(m.to[0], m.to[1]);
-        const d = spindle(a, b, (m.thick * FW) / 2);
+        const a = P(m)(m.from[0], m.from[1]);
+        const b = P(m)(m.to[0], m.to[1]);
+        const d = spindle(a, b, (m.thick * FW * (m.base === 'upper' ? 1.3 : 1)) / 2);
         const op = reveal * (m.active ? 0.55 + 0.35 * pulse : 0.25);
         return (
           <g key={i}>
@@ -68,10 +77,11 @@ export const MuscleLayer: React.FC<{pt: TrackPt; muscles: Muscle[]; reveal: numb
         );
       })}
       {muscles.filter((m) => m.active).map((m, i) => {
-        const c = at((m.from[0] + m.to[0]) / 2, (m.from[1] + m.to[1]) / 2);
+        const c = P(m)((m.from[0] + m.to[0]) / 2, (m.from[1] + m.to[1]) / 2);
         const up = m.labelSide === 'up' ? -1 : 1;
         const left = m.labelAlign === 'left';
-        const lx = c[0] + (left ? -60 : 40), ly = c[1] + up * (m.labelSide === 'up' ? 230 : 200);
+        const dist = m.labelDist ?? (m.labelSide === 'up' ? 230 : 200);
+        const lx = c[0] + (left ? -60 : 70), ly = c[1] + up * dist;
         return (
           <g key={'l' + i} opacity={labels}>
             <line x1={c[0]} y1={c[1]} x2={lx} y2={ly} stroke="#FFFFFF" strokeWidth={4} />
@@ -86,33 +96,51 @@ export const MuscleLayer: React.FC<{pt: TrackPt; muscles: Muscle[]; reveal: numb
   );
 };
 
-// ---- test composition ----
-export type MuscleTestContent = {clip: string; track: TrackPt[]; muscles: Muscle[]; zoom: number; origin: string; title: string; sub: string};
+// ---- sequence of tracked segments ----
+type Segment = {clip: string; track: TrackPt[]; muscles: Muscle[]; title: string; sub: string};
+export type MuscleTestContent = {zoom: number; origin: string; segments: Segment[]};
+export const muscleTestDuration = (c: MuscleTestContent) => c.segments.reduce((a, s) => a + s.track.length, 0);
 
-export const MuscleTest: React.FC<{content: MuscleTestContent}> = ({content: c}) => {
+const SegmentView: React.FC<{s: Segment; zoom: number; origin: string}> = ({s, zoom, origin}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const pt = c.track[Math.min(f, c.track.length - 1)];
-  const reveal = interpolate(f, [12, 30], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const labels = spring({frame: f - 30, fps, config: {damping: 16}});
-  // pulse with lift: wrist above its mean = working harder
-  const ys = c.track.map((p) => p.w[1]);
+  const pt = s.track[Math.min(f, s.track.length - 1)];
+  const reveal = interpolate(f, [8, 22], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const labels = spring({frame: f - 22, fps, config: {damping: 16}});
+  const ys = s.track.map((p) => p.w[1]);
   const lo = Math.min(...ys), hi = Math.max(...ys);
   const pulse = 1 - (pt.w[1] - lo) / Math.max(1, hi - lo);
   const t = spring({frame: f - 4, fps, config: {damping: 16}});
+  const [ox, oy] = origin.split(' ').map((v) => parseFloat(v) / 100);
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
-      <AbsoluteFill style={{transform: `scale(${c.zoom})`, transformOrigin: c.origin}}>
-        <OffthreadVideo src={staticFile(c.clip)} muted style={{width: 1080, height: 1920}} />
+      <AbsoluteFill style={{transform: `scale(${zoom})`, transformOrigin: origin}}>
+        <OffthreadVideo src={staticFile(s.clip)} muted style={{width: 1080, height: 1920}} />
         <AbsoluteFill style={{background: `rgba(15,15,14,${0.25 * reveal})`}} />
       </AbsoluteFill>
-      <MuscleLayer pt={pt} muscles={c.muscles} reveal={reveal} pulse={pulse} labels={labels} zoom={c.zoom} origin={[1080 * parseFloat(c.origin.split(' ')[0]) / 100, 1920 * parseFloat(c.origin.split(' ')[1]) / 100]} />
-      {/* hide the jeans: fade the lower part to dark */}
+      <MuscleLayer pt={pt} muscles={s.muscles} reveal={reveal} pulse={pulse} labels={labels} zoom={zoom} origin={[1080 * ox, 1920 * oy]} />
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,15,14,0) 52%, rgba(15,15,14,.82) 66%, rgba(15,15,14,.97) 80%)'}} />
       <div style={{position: 'absolute', left: 70, right: 70, top: 1240, opacity: t, transform: `translateY(${(1 - t) * 30}px)`}}>
-        <div style={{fontSize: 84, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5, whiteSpace: 'pre-line'}}>{c.title}</div>
-        <div style={{fontSize: 50, fontWeight: 600, color: '#D6D2CA', marginTop: 14, whiteSpace: 'pre-line'}}>{c.sub}</div>
+        <div style={{fontSize: 92, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5}}>{s.title}</div>
+        <div style={{fontSize: 54, fontWeight: 600, color: '#D6D2CA', marginTop: 12, whiteSpace: 'pre-line'}}>{s.sub}</div>
       </div>
+    </AbsoluteFill>
+  );
+};
+
+export const MuscleTest: React.FC<{content: MuscleTestContent}> = ({content: c}) => {
+  let from = 0;
+  return (
+    <AbsoluteFill style={{backgroundColor: C.bg}}>
+      {c.segments.map((s, i) => {
+        const el = (
+          <Sequence key={i} from={from} durationInFrames={s.track.length}>
+            <SegmentView s={s} zoom={c.zoom} origin={c.origin} />
+          </Sequence>
+        );
+        from += s.track.length;
+        return el;
+      })}
     </AbsoluteFill>
   );
 };
