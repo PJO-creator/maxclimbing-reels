@@ -44,7 +44,7 @@ const Hook: React.FC<{c: ElbowContent['hook']}> = ({c}) => {
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
       <AbsoluteFill style={{transform: `scale(${z})`}}>
-        <OffthreadVideo src={staticFile(c.clip)} muted style={{width: 1080, height: 1920, objectFit: 'cover'}} />
+        <OffthreadVideo src={staticFile(c.clip)} style={{width: 1080, height: 1920, objectFit: 'cover'}} />
       </AbsoluteFill>
       <div style={{position: 'absolute', left: 70, right: 70, top: 300}}>
         <Card style={{opacity: a, transform: `translateY(${(1 - a) * -30}px)`}}>
