@@ -7,8 +7,8 @@ import type {Segment} from './MuscleOverlay';
 // "Your fingers got strong. Are your elbows ready?" – text-on-screen how-to with muscle overlays.
 export type ElbowContent = {
   hook: {clip: string; dur: number; l1: string; l2: string; l2At: number};
-  anatomy: {dur: number; title: string; sub: string};
-  bridge: {clip: string; dur: number; title: string};
+  anatomy: {dur: number; steps: {at: number; title: string; sub?: string}[]};
+  bridge: {dur: number; title: string};
   zoom: number;
   origin: string;
   segments: (Segment & {dur: number})[];
@@ -59,10 +59,11 @@ const Hook: React.FC<{c: ElbowContent['hook']}> = ({c}) => {
 };
 
 // Own schematic drawing of a right elbow, front view (not a copy of any atlas image).
-const ElbowDiagram: React.FC<{f: number; fps: number}> = ({f, fps}) => {
-  const bones = interpolate(f, [0, 14], [0, 1], {extrapolateRight: 'clamp'});
-  const mus = interpolate(f, [16, 34], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const dot = pop(f, fps, 40);
+const ElbowDiagram: React.FC<{f: number; fps: number; musAt: number; load: number}> = ({f, fps, musAt, load}) => {
+  const bones = interpolate(f, [0, 12], [0, 1], {extrapolateRight: 'clamp'});
+  const mus = interpolate(f, [musAt, musAt + 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const dot = pop(f, fps, musAt + 10);
+  const elbowLbl = pop(f, fps, 8);
   const pulse = 0.5 + 0.5 * Math.sin(f / 5);
   const bone = '#E9E4DA';
   const ME: [number, number] = [372, 610]; // medial epicondyle
@@ -88,17 +89,18 @@ const ElbowDiagram: React.FC<{f: number; fps: number}> = ({f, fps}) => {
         {flexors.map((p, i) => (
           <path key={i} d={spindle(ME, p, 38)} fill="#C21A12" opacity={0.75} stroke="#FF6A5C" strokeWidth={3} />
         ))}
-        <path d={spindle(ME, [640, 960], 34)} fill="#E0261C" opacity={0.85} stroke="#FF6A5C" strokeWidth={3} />
       </g>
       <g opacity={dot}>
-        <circle cx={ME[0]} cy={ME[1]} r={36 + pulse * 18} fill="none" stroke="#FFFFFF" strokeWidth={5} opacity={0.6} />
+        <circle cx={ME[0]} cy={ME[1]} r={36 + pulse * (18 + 30 * load)} fill="none" stroke={load > 0.5 ? '#FF6A5C' : '#FFFFFF'} strokeWidth={5 + 4 * load} opacity={0.6 + 0.3 * load} />
         <circle cx={ME[0]} cy={ME[1]} r={22} fill="#FFFFFF" filter="url(#eglow)" />
+      </g>
+      {/* elbow bracket */}
+      <g opacity={elbowLbl} fontFamily={FONT} fontWeight={800}>
+        <path d="M 760 520 L 800 520 L 800 760 L 760 760" fill="none" stroke="#FFFFFF" strokeWidth={6} />
+        <text x={830} y={665} fill="#FFFFFF" fontSize={78}>ELBOW</text>
       </g>
       {/* labels */}
       <g opacity={mus} fontFamily={FONT} fontWeight={800} fontSize={44} letterSpacing={1.5}>
-        <line x1={640} y1={960} x2={800} y2={900} stroke="#FFF" strokeWidth={4} />
-        <rect x={790} y={852} width={290} height={66} rx={12} fill={C.accent} />
-        <text x={806} y={900} fill={C.ink}>PRONATOR</text>
         <line x1={455} y1={1150} x2={250} y2={1210} stroke="#FFF" strokeWidth={4} />
         <rect x={0} y={1182} width={390} height={66} rx={12} fill={C.accent} />
         <text x={16} y={1230} fill={C.ink}>FINGER FLEXORS</text>
@@ -115,13 +117,20 @@ const ElbowDiagram: React.FC<{f: number; fps: number}> = ({f, fps}) => {
 const Anatomy: React.FC<{c: ElbowContent['anatomy']}> = ({c}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const t = pop(f, fps, 6);
+  const steps = c.steps;
+  const k = Math.max(0, steps.map((x) => sec(x.at)).filter((a) => f >= a).length - 1);
+  const st = steps[k];
+  const lf = f - sec(st.at);
+  const t = pop(lf, fps, 2);
+  const out = k < steps.length - 1 ? interpolate(f, [sec(steps[k + 1].at) - 6, sec(steps[k + 1].at)], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 1;
+  const musAt = steps.length > 1 ? sec(steps[1].at) : 30;
+  const load = steps.length > 2 ? interpolate(f, [sec(steps[2].at), sec(steps[2].at) + 20], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 0;
   return (
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, #2a2826 0%, #151514 60%, #0F0F0E 100%)', fontFamily: FONT, color: C.ink}}>
-      <ElbowDiagram f={f} fps={fps} />
-      <div style={{position: 'absolute', left: 70, right: 70, top: 270, opacity: t, transform: `translateY(${(1 - t) * 30}px)`}}>
-        <H size={70}>{c.title}</H>
-        <div style={{fontSize: 46, fontWeight: 600, color: '#D6D2CA', marginTop: 14, whiteSpace: 'pre-line'}}>{c.sub}</div>
+      <ElbowDiagram f={f} fps={fps} musAt={musAt} load={load} />
+      <div style={{position: 'absolute', left: 70, right: 70, top: 270, opacity: t * out, transform: `translateY(${(1 - t) * 30}px)`}}>
+        <H size={76}>{st.title}</H>
+        {st.sub && <div style={{fontSize: 48, fontWeight: 600, color: '#D6D2CA', marginTop: 14, whiteSpace: 'pre-line'}}>{st.sub}</div>}
       </div>
     </AbsoluteFill>
   );
@@ -133,10 +142,8 @@ const Bridge: React.FC<{c: ElbowContent['bridge']}> = ({c}) => {
   const p = pop(f, fps, 2);
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
-      <OffthreadVideo src={staticFile(c.clip)} muted style={{width: 1080, height: 1920, objectFit: 'cover'}} />
-      <AbsoluteFill style={{background: 'rgba(15,15,14,.35)'}} />
       <div style={{position: 'absolute', left: 70, right: 70, top: 820, opacity: p, transform: `scale(${0.92 + p * 0.08})`}}>
-        <Card><H size={96}>{c.title}</H></Card>
+        <H size={96}>{c.title}</H>
       </div>
     </AbsoluteFill>
   );
