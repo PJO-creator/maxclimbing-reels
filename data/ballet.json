@@ -1,0 +1,9 @@
+{"shots":[
+ {"clip":"clips/foot/b0.mp4","dur":2.4,"kind":"intro","title":"Climbing footwork\nis basically ballet."},
+ {"clip":"clips/foot/b1.mp4","dur":1.8,"kind":"move","title":"Plié.","sub":"soft knee, silent foot"},
+ {"clip":"clips/foot/b2.mp4","dur":1.8,"kind":"move","title":"Relevé.","sub":"up on your toes"},
+ {"clip":"clips/foot/b3.mp4","dur":1.8,"kind":"move","title":"Tendu.","sub":"reach for the far hold"},
+ {"clip":"clips/foot/b4.mp4","dur":2.0,"kind":"move","title":"Pas de deux.","sub":"two feet, one hold"},
+ {"clip":"clips/foot/b5.mp4","dur":1.8,"kind":"move","title":"Pointe.","sub":"toe on the exact spot"},
+ {"clip":"clips/foot/b6.mp4","dur":3.0,"kind":"outro","title":"Precise feet =\nless strength needed.","sub":"Train them like a dancer."}
+]}
