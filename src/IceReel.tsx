@@ -5,7 +5,7 @@ import {C, FONT, sec} from './PPSReel';
 // Indoor ice axes: blooper hook, why they're strict, pull direction, why not on slopers.
 type Scene =
   | {kind: 'clip'; clip: string; dur: number; sound?: boolean; title: string; sub?: string; top?: boolean}
-  | {kind: 'arrow'; clip: string; dur: number; freezeAt: number; pick: [number, number]; from: [number, number]; to: [number, number]; title: string}
+  | {kind: 'arrow'; clip: string; dur: number; freezeAt: number; pick: [number, number]; from: [number, number]; to: [number, number]; title: string; sub?: string; wrong?: [number, number]}
   | {kind: 'diagram'; dur: number; title: string}
   | {kind: 'end'; clip: string; dur: number; title: string};
 export type IceContent = {scenes: Scene[]};
@@ -43,8 +43,8 @@ const ArrowScene: React.FC<{s: Extract<Scene, {kind: 'arrow'}>}> = ({s}) => {
   const {fps} = useVideoConfig();
   const z0 = sec(s.freezeAt);
   const ring = pop(f, fps, z0);
-  const draw = interpolate(f, [z0 + 6, z0 + 22], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const t = pop(f, fps, z0 + 10);
+  const draw = interpolate(f, [z0 + 22, z0 + 38], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const t = pop(f, fps, z0 + 30);
   const [x1, y1] = s.from, [x2, y2] = s.to;
   const xe = x1 + (x2 - x1) * draw, ye = y1 + (y2 - y1) * draw;
   const ang = Math.atan2(y2 - y1, x2 - x1);
@@ -54,6 +54,16 @@ const ArrowScene: React.FC<{s: Extract<Scene, {kind: 'arrow'}>}> = ({s}) => {
       <AbsoluteFill style={{background: `rgba(15,15,14,${0.35 * ring})`}} />
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
         <circle cx={s.pick[0]} cy={s.pick[1]} r={70 + (1 - ring) * 90} fill="none" stroke="#FFFFFF" strokeWidth={8} opacity={ring} />
+        {s.wrong && (() => {
+          const w = interpolate(f, [z0 + 4, z0 + 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+          const [wx, wy] = s.wrong;
+          return (
+            <g opacity={w}>
+              <line x1={x1} y1={y1} x2={x1 + (wx - x1) * w} y2={y1 + (wy - y1) * w} stroke="#FFFFFF" strokeWidth={12} strokeDasharray="26 20" opacity={0.85} />
+              {w > 0.95 && <text x={wx - 34} y={wy + 70} fontFamily={FONT} fontWeight={800} fontSize={90} fill="#FFFFFF">✗</text>}
+            </g>
+          );
+        })()}
         {draw > 0 && (
           <>
             <line x1={x1} y1={y1} x2={xe} y2={ye} stroke={C.accent} strokeWidth={22} strokeLinecap="round" />
@@ -64,7 +74,7 @@ const ArrowScene: React.FC<{s: Extract<Scene, {kind: 'arrow'}>}> = ({s}) => {
         )}
       </svg>
       <div style={{position: 'absolute', left: 60, right: 60, top: 1180, opacity: t, transform: `translateY(${(1 - t) * 24}px)`}}>
-        <Box style={{background: C.accent}}><T>{s.title}</T></Box>
+        <Box style={{background: C.accent}}><T>{s.title}</T>{s.sub && <div style={{fontSize: 46, fontWeight: 700, marginTop: 10, whiteSpace: 'pre-line'}}>{s.sub}</div>}</Box>
       </div>
     </AbsoluteFill>
   );
