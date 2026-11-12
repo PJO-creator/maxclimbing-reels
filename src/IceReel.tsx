@@ -7,7 +7,8 @@ type Scene =
   | {kind: 'clip'; clip: string; dur: number; sound?: boolean; title: string; sub?: string; top?: boolean}
   | {kind: 'arrow'; clip: string; dur: number; freezeAt: number; pick: [number, number]; from: [number, number]; to: [number, number]; title: string; sub?: string; wrong?: [number, number]}
   | {kind: 'diagram'; dur: number; title: string}
-  | {kind: 'end'; clip: string; dur: number; title: string};
+  | {kind: 'end'; clip: string; dur: number; title: string}
+  | {kind: 'seq'; clip: string; dur: number; texts: {at: number; dur: number; title: string; sub?: string}[]};
 export type IceContent = {scenes: Scene[]};
 export const iceTotal = (c: IceContent) => c.scenes.reduce((a, s) => a + sec(s.dur), 0);
 
@@ -127,6 +128,27 @@ const Diagram: React.FC<{s: Extract<Scene, {kind: 'diagram'}>}> = ({s}) => {
   );
 };
 
+const SeqScene: React.FC<{s: Extract<Scene, {kind: 'seq'}>}> = ({s}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  return (
+    <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
+      <OffthreadVideo src={staticFile(s.clip)} muted style={{width: 1080, height: 1920, objectFit: 'cover'}} />
+      {s.texts.map((t, i) => {
+        const a = sec(t.at), b = a + sec(t.dur);
+        if (f < a - 1 || f > b) return null;
+        const p = pop(f, fps, a);
+        const o = interpolate(f, [b - 6, b], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+        return (
+          <div key={i} style={{position: 'absolute', left: 60, right: 60, top: 1300, opacity: p * o, transform: `translateY(${(1 - p) * 24}px)`}}>
+            <Box><T>{t.title}</T>{t.sub && <div style={{fontSize: 48, fontWeight: 600, color: '#D6D2CA', marginTop: 12, whiteSpace: 'pre-line'}}>{t.sub}</div>}</Box>
+          </div>
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
+
 export const IceReel: React.FC<{content: IceContent}> = ({content: c}) => {
   let t = 0;
   return (
@@ -136,7 +158,7 @@ export const IceReel: React.FC<{content: IceContent}> = ({content: c}) => {
         t += sec(s.dur);
         return (
           <Sequence key={i} from={from} durationInFrames={sec(s.dur)}>
-            {s.kind === 'arrow' ? <ArrowScene s={s} /> : s.kind === 'diagram' ? <Diagram s={s} /> : <ClipScene s={s} />}
+            {s.kind === 'arrow' ? <ArrowScene s={s} /> : s.kind === 'diagram' ? <Diagram s={s} /> : s.kind === 'seq' ? <SeqScene s={s} /> : <ClipScene s={s} />}
           </Sequence>
         );
       })}
