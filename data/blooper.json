@@ -1,1 +1,1 @@
-{"parts": [{"clip": "clips/ice/a.mp4", "dur": 3.83, "sound": true, "text": "Testing new gear."}, {"clip": "clips/ice/b.mp4", "dur": 2.77, "replay": true, "freezeAt": 1.07, "circle": {"x": 500, "y": 960, "r": 300}, "freezeText": "Almost lost my teeth."}]}
+{"parts": [{"clip": "clips/ice/a.mp4", "dur": 3.83, "sound": true, "text": "Testing new gear."}, {"clip": "clips/ice/b.mp4", "dur": 2.77, "replay": true, "freezeAt": 1.07, "circle": {"x": 500, "y": 960, "r": 300}, "freezeText": "Almost lost my teeth."}, {"clip": "clips/ice/d.mp4", "dur": 2.77, "replay": true}]}
