@@ -1,0 +1,7 @@
+{"scenes":[
+ {"kind":"clip","clip":"clips/ice/r1.mp4","dur":1.93,"sound":true,"title":"Pull the wrong way\nand this happens."},
+ {"kind":"clip","clip":"clips/ice/r2.mp4","dur":4.0,"title":"Ice axes don't forgive\na bad pull direction.","sub":"That's what makes them\ngreat for technique."},
+ {"kind":"arrow","clip":"clips/ice/r3.mp4","dur":3.6,"freezeAt":1.4,"pick":[880,140],"from":[855,250],"to":[835,640],"title":"Pull down\nalong the shaft."},
+ {"kind":"diagram","dur":4.0,"title":"Why they don't\nwork on slopers:"},
+ {"kind":"end","clip":"clips/ice/r4.mp4","dur":3.0,"title":"Training tool or a way\nto lose your teeth? ↓"}
+]}
