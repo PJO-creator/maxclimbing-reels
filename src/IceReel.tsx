@@ -28,7 +28,7 @@ const ClipScene: React.FC<{s: Extract<Scene, {kind: 'clip' | 'end'}>}> = ({s}) =
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
       <OffthreadVideo src={staticFile(s.clip)} muted={!(s.kind === 'clip' && s.sound)} style={{width: 1080, height: 1920, objectFit: 'cover'}} />
       {s.kind === 'end' && <AbsoluteFill style={{background: `rgba(15,15,14,${interpolate(f, [0, 10], [0, 0.45], {extrapolateRight: 'clamp'})})`}} />}
-      <div style={{position: 'absolute', left: 60, right: 60, top: top ? 270 : 1180, opacity: p, transform: `translateY(${(1 - p) * (top ? -24 : 24)}px)`}}>
+      <div style={{position: 'absolute', left: 60, right: 60, top: top ? 270 : 1300, opacity: p, transform: `translateY(${(1 - p) * (top ? -24 : 24)}px)`}}>
         <Box>
           <T>{s.title}</T>
           {s.kind === 'clip' && s.sub && <div style={{fontSize: 48, fontWeight: 600, color: '#D6D2CA', marginTop: 12, whiteSpace: 'pre-line'}}>{s.sub}</div>}
