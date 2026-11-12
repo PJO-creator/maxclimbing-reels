@@ -23,6 +23,8 @@ import {FootSwap, footTotal, FootContent} from './FootSwap';
 import footswap from '../data/footswap.json';
 import {BalletReel, balletTotal, BalletContent} from './BalletReel';
 import ballet from '../data/ballet.json';
+import {Blooper, blooperTotal, BlooperContent} from './Blooper';
+import blooper from '../data/blooper.json';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -64,6 +66,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="elbow" component={ElbowReel} durationInFrames={elbowParts(elbow as unknown as ElbowContent).total} fps={30} width={1080} height={1920} defaultProps={{content: elbow as unknown as ElbowContent}} />
     <Composition id="footswap" component={FootSwap} durationInFrames={footTotal(footswap as unknown as FootContent)} fps={30} width={1080} height={1920} defaultProps={{content: footswap as unknown as FootContent}} />
     <Composition id="ballet" component={BalletReel} durationInFrames={balletTotal(ballet as unknown as BalletContent)} fps={30} width={1080} height={1920} defaultProps={{content: ballet as unknown as BalletContent}} />
+    <Composition id="blooper" component={Blooper} durationInFrames={blooperTotal(blooper as unknown as BlooperContent)} fps={30} width={1080} height={1920} defaultProps={{content: blooper as unknown as BlooperContent}} />
     <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );
