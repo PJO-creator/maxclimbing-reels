@@ -75,6 +75,15 @@ Plus:
 - **New products** in the shop.
 - **PPS follow-up** – wait until January (100 new units).
 
+### Series: "Climber's body: antagonists" (same recipe as the elbow reel: problem hook + own anatomy drawing + tracked muscles + protocol)
+Elbow reel (10 Nov) = best since B2: 7.9k views, 194 saves, 63 shares.
+1. Elbow: pronation/supination ✅ posted
+2. Shoulders: face pulls, external rotation, scap pulls/Y-raise (bands: YY Vertical Elastic Bands, blue 5 kg)
+3. Chest / front delts: push-ups, dips (antagonist of lats)
+4. Upper back: lower traps (Y-raise) > shrugs (upper traps are usually already busy in climbers)
+5. Forearm extensors: finger extensions with a band
+6. Core / lower back
+
 ## 4. New content forms to try
 
 ### Humor
