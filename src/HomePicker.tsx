@@ -3,7 +3,7 @@ import {AbsoluteFill, Loop, OffthreadVideo, Sequence, interpolate, spring, stati
 import {C, FONT, sec} from './PPSReel';
 
 // Short "pick your home setup" reel: action hook -> 3+2 grid of moving tiles, each highlighted with its one-liner -> end.
-type Tile = {clip: string; frames: number; name: string; line: string; digital?: boolean; y?: number; pip?: string; pipFrames?: number};
+type Tile = {clip: string; frames: number; name: string; line: string; digital?: boolean; y?: number; crop?: [number, number]; mark?: {x: number; y: number; label: string; dx?: number; dy?: number}; pip?: string; pipFrames?: number};
 export type PickerContent = {
   series: string;
   hook: {clip: string; frames: number; dur: number; top: string; bottom: string};
@@ -49,7 +49,7 @@ const Grid: React.FC<{c: PickerContent}> = ({c}) => {
   const hl = pop(f, fps, kStart);
   const cur = c.tiles[k];
   const p = pop(f, fps, 2);
-  const TW = 172, GAP = (960 - 5 * TW) / 4;
+  const TW = 150, GAP = (960 - 5 * TW) / 4;
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
       <div style={{position: 'absolute', left: 60, right: 60, top: 200, opacity: p}}>
@@ -61,23 +61,52 @@ const Grid: React.FC<{c: PickerContent}> = ({c}) => {
         const q = pop(f, fps, 2 + i * 3);
         const on = i === k;
         return (
-          <div key={i} style={{position: 'absolute', left: 60 + i * (TW + GAP), top: 420, width: TW, height: TW, borderRadius: 18, overflow: 'hidden', opacity: q * (on ? 1 : 0.4), transform: `scale(${on ? 1 + 0.06 * hl : 0.94})`, border: on ? `5px solid ${C.accent}` : '5px solid transparent', boxSizing: 'border-box'}}>
+          <div key={i} style={{position: 'absolute', left: 60 + i * (TW + GAP), top: 380, width: TW, height: TW, borderRadius: 18, overflow: 'hidden', opacity: q * (on ? 1 : 0.4), transform: `scale(${on ? 1 + 0.06 * hl : 0.94})`, border: on ? `5px solid ${C.accent}` : '5px solid transparent', boxSizing: 'border-box'}}>
             <Loop durationInFrames={t.frames}><OffthreadVideo src={staticFile(t.clip)} muted style={{width: TW, height: TW, objectFit: 'cover', objectPosition: `50% ${(t.y ?? 0.5) * 100}%`, display: 'block'}} /></Loop>
             <div style={{position: 'absolute', left: 6, bottom: 4, fontSize: 30, fontWeight: 800, textShadow: '0 2px 8px rgba(0,0,0,.8)'}}>{i + 1}</div>
           </div>
         );
       })}
-      {/* big panel */}
-      <div key={'p' + k} style={{position: 'absolute', left: 60, top: 630, width: 960, height: 660, borderRadius: 30, overflow: 'hidden', opacity: hl, transform: `scale(${0.96 + 0.04 * hl})`, boxShadow: '0 20px 50px rgba(0,0,0,.6)'}}>
-        <Loop durationInFrames={cur.frames}><OffthreadVideo src={staticFile(cur.clip)} muted style={{width: 960, height: 660, objectFit: 'cover', objectPosition: `50% ${(cur.y ?? 0.5) * 100}%`, display: 'block'}} /></Loop>
-        {cur.pip && (
-          <div style={{position: 'absolute', right: 20, top: 20, width: 270, borderRadius: 24, overflow: 'hidden', border: '5px solid #0b0b0b', boxShadow: '0 12px 30px rgba(0,0,0,.6)'}}>
-            <Loop durationInFrames={cur.pipFrames ?? 108} layout="none"><OffthreadVideo src={staticFile(cur.pip)} muted style={{width: 270, display: 'block'}} /></Loop>
-          </div>
-        )}
-        <div style={{position: 'absolute', left: 20, top: 20, background: cur.digital ? C.accent : C.ink, color: cur.digital ? C.ink : C.bg, borderRadius: 10, padding: '2px 14px 6px', fontSize: 30, fontWeight: 800, letterSpacing: 2}}>{cur.digital ? 'DIGITAL' : 'ANALOG'}</div>
-      </div>
-      <div key={'c' + k} style={{position: 'absolute', left: 60, right: 60, top: 1320, opacity: hl, transform: `translateY(${(1 - hl) * 24}px)`}}>
+      {/* big panel: shows source rows crop[0]..crop[1] so the gear stays in frame */}
+      {(() => {
+        const H = 820, TOP = 570;
+        const [y0, y1] = cur.crop ?? [0, 1920];
+        const sc = H / (y1 - y0);
+        const vw = 1080 * sc, vh = 1920 * sc;
+        const side = !!cur.pip && vw < 700;
+        const w = Math.min(960, vw);
+        const pipW = side ? Math.min(300, 1080 - 70 - w - 40 - 50) : 270;
+        const left = side ? (1080 - (w + 40 + pipW)) / 2 : (1080 - w) / 2;
+        return (
+          <>
+            <div key={'p' + k} style={{position: 'absolute', left, top: TOP, width: w, height: H, borderRadius: 30, overflow: 'hidden', opacity: hl, transform: `scale(${0.96 + 0.04 * hl})`, boxShadow: '0 20px 50px rgba(0,0,0,.6)'}}>
+              <Loop durationInFrames={cur.frames}><OffthreadVideo src={staticFile(cur.clip)} muted style={{position: 'absolute', width: vw, height: vh, left: (w - vw) / 2, top: -y0 * sc}} /></Loop>
+              {cur.mark && (() => {
+                const m = cur.mark;
+                const mq = pop(f, fps, kStart + 14);
+                const cx = (w - vw) / 2 + m.x * sc, cy = (m.y - y0) * sc;
+                const lx = cx + (m.dx ?? 0), ly = cy + (m.dy ?? -130);
+                return (
+                  <div style={{opacity: mq}}>
+                    <svg width={w} height={H} style={{position: 'absolute', inset: 0}}>
+                      <line x1={lx} y1={ly + 30} x2={cx + (lx - cx) * 0.35 * (2 - mq)} y2={cy + (ly + 30 - cy) * 0.35 * (2 - mq)} stroke={C.accent} strokeWidth={8} strokeLinecap="round" />
+                      <circle cx={cx} cy={cy} r={46} fill="none" stroke={C.accent} strokeWidth={7} />
+                    </svg>
+                    <div style={{position: 'absolute', left: lx, top: ly, transform: 'translate(-50%, -50%)', background: C.accent, borderRadius: 12, padding: '4px 16px 8px', fontSize: 36, fontWeight: 800, whiteSpace: 'nowrap'}}>{m.label}</div>
+                  </div>
+                );
+              })()}
+              <div style={{position: 'absolute', left: 16, top: 16, background: cur.digital ? C.accent : C.ink, color: cur.digital ? C.ink : C.bg, borderRadius: 10, padding: '2px 14px 6px', fontSize: 30, fontWeight: 800, letterSpacing: 2}}>{cur.digital ? 'DIGITAL' : 'ANALOG'}</div>
+            </div>
+            {cur.pip && (
+              <div key={'q' + k} style={{position: 'absolute', left: side ? left + w + 40 : left + w - pipW - 20, top: side ? TOP + (H - pipW * 2.2) / 2 : TOP + 20, width: pipW, borderRadius: 26, overflow: 'hidden', border: '5px solid #0b0b0b', boxShadow: '0 12px 30px rgba(0,0,0,.6)', opacity: pop(f, fps, kStart + 6)}}>
+                <Loop durationInFrames={cur.pipFrames ?? 108} layout="none"><OffthreadVideo src={staticFile(cur.pip)} muted style={{width: pipW, display: 'block'}} /></Loop>
+              </div>
+            )}
+          </>
+        );
+      })()}
+      <div key={'c' + k} style={{position: 'absolute', left: 60, right: 60, top: 1420, opacity: hl, transform: `translateY(${(1 - hl) * 24}px)`}}>
         <div style={{fontSize: 46, fontWeight: 800, color: '#FF6A5C', letterSpacing: 0.5}}>{k + 1}/{c.tiles.length} · {cur.name.replace(/\n/g, ' ')}</div>
         <div style={{fontSize: 62, fontWeight: 800, lineHeight: 1.08, letterSpacing: -1, marginTop: 10, whiteSpace: 'pre-line'}}>{cur.line}</div>
       </div>

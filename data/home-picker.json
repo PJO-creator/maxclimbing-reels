@@ -16,7 +16,18 @@
    "frames": 115,
    "name": "Hangboard\n+ weight belt",
    "line": "The classic.\nHangs + weighted pull-ups.",
-   "y": 0.15
+   "y": 0.15,
+   "crop": [
+    0,
+    1400
+   ],
+   "mark": {
+    "x": 600,
+    "y": 830,
+    "label": "Weight belt",
+    "dx": 90,
+    "dy": 160
+   }
   },
   {
    "clip": "clips/home/act_he.mp4",
@@ -25,15 +36,30 @@
    "line": "See your kg live.\nTrack your progress.",
    "digital": true,
    "y": 0.3,
-   "pip": "clips/home/pip_entralpi.mp4",
-   "pipFrames": 108
+   "pip": "clips/home/pip_entralpi_p.mp4",
+   "pipFrames": 114,
+   "crop": [
+    0,
+    1900
+   ],
+   "mark": {
+    "x": 580,
+    "y": 1745,
+    "label": "Force plate",
+    "dx": 0,
+    "dy": -150
+   }
   },
   {
    "clip": "clips/home/act_ag.mp4",
    "frames": 115,
    "name": "Grip tools\n+ Loading Pin",
    "line": "No drilling. Crimp, sloper,\npinch, one hand at a time.",
-   "y": 0.6
+   "y": 0.6,
+   "crop": [
+    300,
+    1500
+   ]
   },
   {
    "clip": "clips/home/act_dg.mp4",
@@ -43,14 +69,29 @@
    "digital": true,
    "y": 0.55,
    "pip": "clips/home/pip_tindeq.mp4",
-   "pipFrames": 116
+   "pipFrames": 116,
+   "crop": [
+    640,
+    1560
+   ]
   },
   {
    "clip": "clips/home/act_pps.mp4",
    "frames": 116,
    "name": "PPS\n+ grip tools",
    "line": "Hang it anywhere: a branch,\na staircase. Grip + pulling.",
-   "y": 0.15
+   "y": 0.15,
+   "crop": [
+    0,
+    1300
+   ],
+   "mark": {
+    "x": 715,
+    "y": 525,
+    "label": "Grip tool",
+    "dx": -230,
+    "dy": 120
+   }
   }
  ],
  "end": {
