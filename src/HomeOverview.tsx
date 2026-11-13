@@ -3,8 +3,8 @@ import {AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, staticFile,
 import {C, FONT, sec} from './PPSReel';
 
 // "Training at home: analog or digital?" overview with setup cards.
-type Setup = {group: 'ANALOG' | 'DIGITAL'; name: string; action: string; flat: string; pip?: string; checks: [string, boolean][]; progress: string; dur: number; flatFor?: number; mark?: {x: number; y: number; label: string}};
-export type HomeContent = {hook: {top: string; bottom: string; dur: number; title: string; tiles?: {src: string; label: string; digital?: boolean}[]}; setups: Setup[]; end: {dur: number; title: string; sub: string; q: string}};
+type Setup = {group: 'ANALOG' | 'DIGITAL'; name: string; action: string; flat: string; pip?: string; checks: [string, boolean][]; progress: string; dur: number; flatFor?: number; mark?: {x: number; y: number; label: string; lx?: number; ly?: number}};
+export type HomeContent = {hook: {top: string; bottom: string; dur: number; title: string; tiles?: {src: string; label: string; digital?: boolean}[]; series?: string; info?: {at: number; text: string; next: string}}; setups: Setup[]; end: {dur: number; title: string; sub: string; q: string; next?: string}};
 export const homeTotal = (c: HomeContent) => sec(c.hook.dur) + c.setups.reduce((a, s) => a + sec(s.dur), 0) + sec(c.end.dur);
 
 const pop = (f: number, fps: number, d = 0) => spring({frame: f - d, fps, config: {damping: 15}});
@@ -24,6 +24,7 @@ const Hook: React.FC<{c: HomeContent['hook']}> = ({c}) => {
     return (
       <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
         <div style={{position: 'absolute', left: 80, right: 60, top: 190, opacity: p, transform: `translateY(${(1 - p) * -20}px)`}}>
+          {c.series && <div style={{position: 'absolute', top: -84, left: 0, background: C.accent, borderRadius: 12, padding: '4px 18px 8px', fontSize: 36, fontWeight: 800, letterSpacing: 3}}>{c.series}</div>}
           <div style={{fontSize: 92, fontWeight: 800, lineHeight: 1.02, letterSpacing: -1.8, whiteSpace: 'pre-line'}}>{c.title}</div>
         </div>
         {c.tiles.map((t, k) => {
@@ -36,6 +37,19 @@ const Hook: React.FC<{c: HomeContent['hook']}> = ({c}) => {
             </div>
           );
         })}
+        {c.info && (() => {
+          const q = pop(f, fps, sec(c.info.at));
+          const q2 = pop(f, fps, sec(c.info.at) + 30);
+          return (
+            <>
+              <AbsoluteFill style={{background: `rgba(15,15,14,${0.62 * q})`}} />
+              <div style={{position: 'absolute', left: 70, right: 70, top: 900, opacity: q, transform: `translateY(${(1 - q) * 40}px)`, background: 'rgba(15,15,14,.95)', border: `4px solid ${C.accent}`, borderRadius: 30, padding: '36px 44px 44px'}}>
+                <div style={{fontSize: 66, fontWeight: 800, lineHeight: 1.08, letterSpacing: -1, whiteSpace: 'pre-line'}}>{c.info.text}</div>
+                <div style={{opacity: q2, marginTop: 26, fontSize: 46, fontWeight: 700, color: '#D6D2CA', whiteSpace: 'pre-line'}}>{c.info.next}</div>
+              </div>
+            </>
+          );
+        })()}
       </AbsoluteFill>
     );
   }
@@ -91,7 +105,19 @@ const SetupCard: React.FC<{s: Setup; i: number; n: number}> = ({s, i, n}) => {
       )}
       {s.mark && (() => {
         const q = pop(g, fps, 16);
-        const {x, y, label} = s.mark;
+        const {x, y, label, lx, ly} = s.mark;
+        if (lx !== undefined && ly !== undefined) {
+          const ex = x - 70 * 0.75, ey = y + 20;
+          return (
+            <div style={{opacity: q}}>
+              <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+                <line x1={lx + 20} y1={ly + 40} x2={lx + 20 + (ex - lx - 20) * q} y2={ly + 40 + (ey - ly - 40) * q} stroke={C.accent} strokeWidth={12} strokeLinecap="round" />
+                <circle cx={x} cy={y} r={75} fill="none" stroke={C.accent} strokeWidth={8} />
+              </svg>
+              <div style={{position: 'absolute', right: 1080 - lx - 20, top: ly, background: C.accent, borderRadius: 14, padding: '6px 22px 10px', fontSize: 50, fontWeight: 800, whiteSpace: 'nowrap'}}>{label}</div>
+            </div>
+          );
+        }
         return (
           <div style={{opacity: q}}>
             <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
@@ -123,7 +149,8 @@ const End: React.FC<{c: HomeContent['end']}> = ({c}) => {
     <AbsoluteFill style={{background: C.bg, fontFamily: FONT, color: C.ink, padding: '0 80px', justifyContent: 'center'}}>
       <div style={{opacity: pop(f, fps, 2), fontSize: 80, fontWeight: 800, lineHeight: 1.05, letterSpacing: -1.5, whiteSpace: 'pre-line'}}>{c.title}</div>
       <div style={{opacity: pop(f, fps, 14), fontSize: 50, fontWeight: 600, color: '#D6D2CA', marginTop: 24, whiteSpace: 'pre-line'}}>{c.sub}</div>
-      <div style={{opacity: pop(f, fps, 34), marginTop: 60, alignSelf: 'flex-start', background: C.accent, borderRadius: 18, padding: '12px 30px 16px', fontSize: 62, fontWeight: 800}}>{c.q}</div>
+      {c.next && <div style={{opacity: pop(f, fps, 26), fontSize: 50, fontWeight: 800, marginTop: 40, whiteSpace: 'pre-line'}}>{c.next}</div>}
+      <div style={{opacity: pop(f, fps, 40), marginTop: 50, alignSelf: 'flex-start', background: C.accent, borderRadius: 18, padding: '12px 30px 16px', fontSize: 62, fontWeight: 800}}>{c.q}</div>
     </AbsoluteFill>
   );
 };
