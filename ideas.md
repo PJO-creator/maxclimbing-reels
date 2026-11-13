@@ -57,6 +57,23 @@ Source: Metricool (Instagram), pulled 2026-11-09 (previous pull 2026-11-06). Vie
 
 Implication for us: real footage of climbers + real numbers overlaid (testing station, Max Games, comps, Entralpi live kg) is our unique angle. Avoid product-only and static scenes.
 
+## 2b. Starting point for every reel: goal → problem → product
+Pieterjan's product question "which problem does this solve?" is also the reel's angle. PPS reel = goal (one-arm pull-up) + protocol → 101k views, ~31 sales. Elbow reel = problem (elbow pain) + protocol → 194 saves.
+
+| Goal | Problem | Product | Reel idea |
+|---|---|---|---|
+| Milestone skill (OAP, one-arm hang, lock-off) | step too big, no progress | PPS, One Arm Trainer, One Finger Trainer | "Your first one-arm hang in 4 steps" |
+| **Train at home, little time** (priority) | no time for the gym (jobs, kids) | hangboards, bands, Entralpi, rings, PPS | series "20 min at home" |
+| Trip prep (Font, Spain, Frankenjura) | "Font slopers destroy me" | Sloper King, pinch tools, Rolling Handles | "6 weeks until Font? Train this." |
+| Weak hold type | crimps / slopers / pinches | pinch block, Thumb War, Sloper King, hangboards | "Can't hold slopers?" |
+| Measure progress | "am I getting stronger?" | Entralpi, testing stations | "Same hang, 2 months later" |
+| Stay injury-free, climb longer (35+, comeback) | body can't keep up with fingers | bands, Popeye Pronator | antagonist series |
+| Multi-day trips | skin gone after day 1 | Repair balm | "Day 3: save your skin" |
+| Technique / footwork | strong but clumsy | footwork panel, ice axes | foot swap, ice axes |
+| Beat friends / compete | who's strongest? | testing stations, Max Games, monthly comps | comp reels from Jan 2027 |
+
+Rules: product in shot early and named in the caption; training language (helps/builds), never fixes/cures; caption line "Pain already? See a physio" for body-related reels.
+
 ## 3. Idea backlog (topic × format)
 
 | Topic | A vs B (split) | How-to (steps) | Myth / mistake | Test yourself |
