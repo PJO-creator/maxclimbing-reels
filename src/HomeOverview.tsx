@@ -3,8 +3,8 @@ import {AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, staticFile,
 import {C, FONT, sec} from './PPSReel';
 
 // "Training at home: analog or digital?" overview with setup cards.
-type Setup = {group: 'ANALOG' | 'DIGITAL'; name: string; action: string; flat: string; pip?: string; checks: [string, boolean][]; progress: string; dur: number; flatFor?: number};
-export type HomeContent = {hook: {top: string; bottom: string; dur: number; title: string}; setups: Setup[]; end: {dur: number; title: string; sub: string; q: string}};
+type Setup = {group: 'ANALOG' | 'DIGITAL'; name: string; action: string; flat: string; pip?: string; checks: [string, boolean][]; progress: string; dur: number; flatFor?: number; mark?: {x: number; y: number; label: string}};
+export type HomeContent = {hook: {top: string; bottom: string; dur: number; title: string; tiles?: {src: string; label: string; digital?: boolean}[]}; setups: Setup[]; end: {dur: number; title: string; sub: string; q: string}};
 export const homeTotal = (c: HomeContent) => sec(c.hook.dur) + c.setups.reduce((a, s) => a + sec(s.dur), 0) + sec(c.end.dur);
 
 const pop = (f: number, fps: number, d = 0) => spring({frame: f - d, fps, config: {damping: 15}});
@@ -19,6 +19,26 @@ const Hook: React.FC<{c: HomeContent['hook']}> = ({c}) => {
       <div style={{position: 'absolute', left: 60, top: y === 0 ? 280 : 60, opacity: pop(f, fps, d), background: label === 'ANALOG' ? C.ink : C.accent, color: label === 'ANALOG' ? C.bg : C.ink, borderRadius: 14, padding: '6px 22px 10px', fontSize: 52, fontWeight: 800, letterSpacing: 3}}>{label}</div>
     </div>
   );
+  if (c.tiles) {
+    const pos = [[80, 470], [560, 470], [80, 940], [560, 940], [320, 1410]];
+    return (
+      <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
+        <div style={{position: 'absolute', left: 80, right: 60, top: 190, opacity: p, transform: `translateY(${(1 - p) * -20}px)`}}>
+          <div style={{fontSize: 92, fontWeight: 800, lineHeight: 1.02, letterSpacing: -1.8, whiteSpace: 'pre-line'}}>{c.title}</div>
+        </div>
+        {c.tiles.map((t, k) => {
+          const q = pop(f, fps, 6 + k * 5);
+          return (
+            <div key={k} style={{position: 'absolute', left: pos[k][0], top: pos[k][1], width: 440, height: 440, borderRadius: 26, overflow: 'hidden', opacity: q, transform: `scale(${0.85 + 0.15 * q})`, boxShadow: '0 12px 30px rgba(0,0,0,.5)'}}>
+              <OffthreadVideo src={staticFile(t.src)} muted style={{width: 440, height: 782, marginTop: -171}} />
+              <div style={{position: 'absolute', left: 14, top: 14, background: t.digital ? C.accent : C.ink, color: t.digital ? C.ink : C.bg, borderRadius: 10, padding: '2px 12px 5px', fontSize: 26, fontWeight: 800, letterSpacing: 2}}>{t.digital ? 'DIGITAL' : 'ANALOG'}</div>
+              <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(15,15,14,0), rgba(15,15,14,.85))', padding: '30px 16px 14px', fontSize: 32, fontWeight: 800, lineHeight: 1.1, whiteSpace: 'pre-line'}}>{t.label}</div>
+            </div>
+          );
+        })}
+      </AbsoluteFill>
+    );
+  }
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
       {half(c.top, 0, 'ANALOG', 10)}
@@ -65,10 +85,23 @@ const SetupCard: React.FC<{s: Setup; i: number; n: number}> = ({s, i, n}) => {
       </div>
       {/* app pip */}
       {s.pip && (
-        <div style={{position: 'absolute', left: 50, top: 600, width: 250, borderRadius: 26, overflow: 'hidden', border: '6px solid #0b0b0b', boxShadow: '0 16px 40px rgba(0,0,0,.6)', opacity: pop(g, fps, 14)}}>
-          <Sequence from={ff}><OffthreadVideo src={staticFile(s.pip)} muted style={{width: 250, display: 'block'}} /></Sequence>
+        <div style={{position: 'absolute', left: 50, top: 520, width: 300, borderRadius: 30, overflow: 'hidden', border: '6px solid #0b0b0b', boxShadow: '0 16px 40px rgba(0,0,0,.6)', opacity: pop(g, fps, 14)}}>
+          <Sequence from={ff} layout="none"><OffthreadVideo src={staticFile(s.pip)} muted style={{width: 300, display: 'block'}} /></Sequence>
         </div>
       )}
+      {s.mark && (() => {
+        const q = pop(g, fps, 16);
+        const {x, y, label} = s.mark;
+        return (
+          <div style={{opacity: q}}>
+            <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+              <line x1={x + 230} y1={y - 210} x2={x + 40 + (1 - q) * 120} y2={y - 30 - (1 - q) * 110} stroke={C.accent} strokeWidth={12} strokeLinecap="round" />
+              <circle cx={x} cy={y} r={70} fill="none" stroke={C.accent} strokeWidth={8} />
+            </svg>
+            <div style={{position: 'absolute', left: x + 170, top: y - 290, background: C.accent, borderRadius: 14, padding: '6px 22px 10px', fontSize: 50, fontWeight: 800}}>{label}</div>
+          </div>
+        );
+      })()}
       {/* checks */}
       <div style={{position: 'absolute', left: 60, right: 60, top: 1240, display: 'flex', flexWrap: 'wrap', gap: 14}}>
         {s.checks.map(([k, ok], j) => {
