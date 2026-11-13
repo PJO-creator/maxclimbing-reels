@@ -1,0 +1,9 @@
+{"hook":{"top":"clips/home/f_ag.mp4","bottom":"clips/home/f_he.mp4","dur":3.0,"title":"Training at home:\nanalog or digital?"},
+ "setups":[
+  {"group":"ANALOG","name":"Hangboard\n+ weight belt","action":"clips/home/act_hb.mp4","flat":"clips/home/f_hb.mp4","checks":[["Crimp",true],["Sloper",true],["Pull",true],["Pinch",false]],"progress":"add kg","dur":3.6},
+  {"group":"ANALOG","name":"Grip tools\n+ Loading Pin","action":"clips/home/act_ag.mp4","flat":"clips/home/f_ag.mp4","checks":[["Crimp",true],["Sloper",true],["Pinch",true],["Pull",false]],"progress":"add kg","dur":3.6},
+  {"group":"ANALOG","name":"PPS\n+ grip tools","action":"clips/home/act_pps.mp4","flat":"clips/home/f_pps.mp4","checks":[["Crimp",true],["Sloper",true],["Pinch",true],["Pull",true]],"progress":"+5% bodyweight per hole","dur":3.6},
+  {"group":"DIGITAL","name":"Hangboard\n+ force plate","action":"clips/home/act_he.mp4","flat":"clips/home/f_he.mp4","pip":"clips/home/pip_entralpi.mp4","checks":[["Crimp",true],["Sloper",true],["Pull",false],["Pinch",false]],"progress":"live kg, tests, history","dur":3.6},
+  {"group":"DIGITAL","name":"Grip tools + Tindeq\n+ loading platform","action":"clips/home/act_dg.mp4","flat":"clips/home/f_dg.mp4","pip":"clips/home/pip_tindeq.mp4","checks":[["Crimp",true],["Sloper",true],["Pinch",true],["Pull",false]],"progress":"live force, no weights","dur":3.6}
+ ],
+ "end":{"dur":3.6,"title":"Strength only.","sub":"Endurance, technique and durability?\nYou still need the wall for that.","q":"Which setup fits you? ↓"}}
