@@ -3,13 +3,13 @@
  "hook": {
   "clip": "clips/home/act_hb.mp4",
   "frames": 115,
-  "dur": 2.8,
+  "dur": 3.6,
   "top": "No time for the gym?",
-  "bottom": "Train your fingers\nat home."
+  "bottom": "Train your climbing\nmuscles at home."
  },
  "title": "5 setups. Pick yours.",
  "intro": 0,
- "per": 2.8,
+ "per": 3.6,
  "tiles": [
   {
    "clip": "clips/home/act_hb.mp4",
@@ -95,7 +95,7 @@
   }
  ],
  "end": {
-  "dur": 3.6,
+  "dur": 4.4,
   "title": "Next episodes:\na full session\nper setup.",
   "next": "Strength only. Endurance &\ntechnique: on the wall.",
   "q": "Which one would you pick? ↓"

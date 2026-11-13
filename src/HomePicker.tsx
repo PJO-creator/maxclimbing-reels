@@ -80,7 +80,7 @@ const Grid: React.FC<{c: PickerContent}> = ({c}) => {
         return (
           <>
             <div key={'p' + k} style={{position: 'absolute', left, top: TOP, width: w, height: H, borderRadius: 30, overflow: 'hidden', opacity: hl, transform: `scale(${0.96 + 0.04 * hl})`, boxShadow: '0 20px 50px rgba(0,0,0,.6)'}}>
-              <Loop durationInFrames={cur.frames}><OffthreadVideo src={staticFile(cur.clip)} muted style={{position: 'absolute', width: vw, height: vh, left: (w - vw) / 2, top: -y0 * sc}} /></Loop>
+              <Sequence from={kStart}><OffthreadVideo src={staticFile(cur.clip)} muted style={{position: 'absolute', width: vw, height: vh, left: (w - vw) / 2, top: -y0 * sc}} /></Sequence>
               {cur.mark && (() => {
                 const m = cur.mark;
                 const mq = pop(f, fps, kStart + 14);
@@ -100,7 +100,7 @@ const Grid: React.FC<{c: PickerContent}> = ({c}) => {
             </div>
             {cur.pip && (
               <div key={'q' + k} style={{position: 'absolute', left: side ? left + w + 40 : left + w - pipW - 20, top: side ? TOP + (H - pipW * 2.2) / 2 : TOP + 20, width: pipW, borderRadius: 26, overflow: 'hidden', border: '5px solid #0b0b0b', boxShadow: '0 12px 30px rgba(0,0,0,.6)', opacity: pop(f, fps, kStart + 6)}}>
-                <Loop durationInFrames={cur.pipFrames ?? 108} layout="none"><OffthreadVideo src={staticFile(cur.pip)} muted style={{width: pipW, display: 'block'}} /></Loop>
+                <Sequence from={kStart} layout="none"><OffthreadVideo src={staticFile(cur.pip)} muted style={{width: pipW, display: 'block'}} /></Sequence>
               </div>
             )}
           </>
