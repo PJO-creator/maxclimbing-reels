@@ -3,7 +3,7 @@ import {AbsoluteFill, Loop, OffthreadVideo, Sequence, interpolate, spring, stati
 import {C, FONT, sec} from './PPSReel';
 
 // Short "pick your home setup" reel: action hook -> 3+2 grid of moving tiles, each highlighted with its one-liner -> end.
-type Tile = {clip: string; frames: number; name: string; line: string; digital?: boolean; y?: number; crop?: [number, number]; mark?: {x: number; y: number; label: string; dx?: number; dy?: number}; pip?: string; pipFrames?: number};
+type Tile = {clip: string; frames: number; name: string; line: string; digital?: boolean; y?: number; crop?: [number, number]; mark?: {x: number; y: number; label: string; dx?: number; dy?: number; track?: [number, number][]}; pip?: string; pipFrames?: number};
 export type PickerContent = {
   series: string;
   hook: {clip: string; frames: number; dur: number; top: string; bottom: string};
@@ -84,7 +84,8 @@ const Grid: React.FC<{c: PickerContent}> = ({c}) => {
               {cur.mark && (() => {
                 const m = cur.mark;
                 const mq = pop(f, fps, kStart + 14);
-                const cx = (w - vw) / 2 + m.x * sc, cy = (m.y - y0) * sc;
+                const tp = m.track ? m.track[Math.max(0, Math.min(m.track.length - 1, f - kStart))] : [m.x, m.y];
+                const cx = (w - vw) / 2 + tp[0] * sc, cy = (tp[1] - y0) * sc;
                 const lx = cx + (m.dx ?? 0), ly = cy + (m.dy ?? -130);
                 return (
                   <div style={{opacity: mq}}>
