@@ -3,7 +3,7 @@ import {AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, staticFile,
 import {C, FONT, sec} from './PPSReel';
 
 // "Training at home: analog or digital?" overview with setup cards.
-type Setup = {group: 'ANALOG' | 'DIGITAL'; name: string; action: string; flat: string; pip?: string; checks: [string, boolean][]; progress: string; dur: number};
+type Setup = {group: 'ANALOG' | 'DIGITAL'; name: string; action: string; flat: string; pip?: string; checks: [string, boolean][]; progress: string; dur: number; flatFor?: number};
 export type HomeContent = {hook: {top: string; bottom: string; dur: number; title: string}; setups: Setup[]; end: {dur: number; title: string; sub: string; q: string}};
 export const homeTotal = (c: HomeContent) => sec(c.hook.dur) + c.setups.reduce((a, s) => a + sec(s.dur), 0) + sec(c.end.dur);
 
@@ -33,11 +33,26 @@ const Hook: React.FC<{c: HomeContent['hook']}> = ({c}) => {
 const SetupCard: React.FC<{s: Setup; i: number; n: number}> = ({s, i, n}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const p = pop(f, fps, 2);
+  const p = 1;
   const digital = s.group === 'DIGITAL';
+  const ff = sec(s.flatFor ?? 0);
+  if (f < ff) {
+    const q = pop(f, fps, 2);
+    return (
+      <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
+        <OffthreadVideo src={staticFile(s.flat)} muted style={{width: 1080, height: 1920, objectFit: 'cover', transform: `scale(${interpolate(f, [0, ff], [1.0, 1.08])})`}} />
+        <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,15,14,.75) 0%, rgba(15,15,14,0) 30%)'}} />
+        <div style={{position: 'absolute', left: 60, right: 60, top: 250, opacity: q, transform: `translateY(${(1 - q) * -24}px)`}}>
+          <div style={{display: 'inline-block', background: digital ? C.accent : C.ink, color: digital ? C.ink : C.bg, borderRadius: 12, padding: '4px 18px 8px', fontSize: 38, fontWeight: 800, letterSpacing: 3}}>{s.group} · {i}/{n}</div>
+          <div style={{fontSize: 84, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5, marginTop: 14, whiteSpace: 'pre-line', textShadow: '0 2px 16px rgba(0,0,0,.6)'}}>{s.name}</div>
+        </div>
+      </AbsoluteFill>
+    );
+  }
+  const g = f - ff;
   return (
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
-      <OffthreadVideo src={staticFile(s.action)} muted style={{width: 1080, height: 1920, objectFit: 'cover'}} />
+      <Sequence from={ff}><OffthreadVideo src={staticFile(s.action)} muted style={{width: 1080, height: 1920, objectFit: 'cover'}} /></Sequence>
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,15,14,.7) 0%, rgba(15,15,14,0) 26%, rgba(15,15,14,0) 58%, rgba(15,15,14,.85) 78%)'}} />
       {/* header */}
       <div style={{position: 'absolute', left: 60, right: 60, top: 250, opacity: p, transform: `translateY(${(1 - p) * -24}px)`}}>
@@ -45,25 +60,25 @@ const SetupCard: React.FC<{s: Setup; i: number; n: number}> = ({s, i, n}) => {
         <div style={{fontSize: 72, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5, marginTop: 14, whiteSpace: 'pre-line', textShadow: '0 2px 16px rgba(0,0,0,.6)'}}>{s.name}</div>
       </div>
       {/* flat-lay inset */}
-      <div style={{position: 'absolute', right: 50, top: 560, width: 300, height: 300, borderRadius: 24, overflow: 'hidden', border: '4px solid #F4F1EA', boxShadow: '0 16px 40px rgba(0,0,0,.5)', opacity: pop(f, fps, 8), transform: `scale(${0.85 + 0.15 * pop(f, fps, 8)})`}}>
+      <div style={{position: 'absolute', right: 50, top: 560, width: 300, height: 300, borderRadius: 24, overflow: 'hidden', border: '4px solid #F4F1EA', boxShadow: '0 16px 40px rgba(0,0,0,.5)', opacity: pop(g, fps, 8), transform: `scale(${0.85 + 0.15 * pop(g, fps, 8)})`}}>
         <OffthreadVideo src={staticFile(s.flat)} muted style={{width: 300, height: 533, marginTop: -116}} />
       </div>
       {/* app pip */}
       {s.pip && (
-        <div style={{position: 'absolute', left: 50, top: 600, width: 250, borderRadius: 26, overflow: 'hidden', border: '6px solid #0b0b0b', boxShadow: '0 16px 40px rgba(0,0,0,.6)', opacity: pop(f, fps, 14)}}>
-          <OffthreadVideo src={staticFile(s.pip)} muted style={{width: 250, display: 'block'}} />
+        <div style={{position: 'absolute', left: 50, top: 600, width: 250, borderRadius: 26, overflow: 'hidden', border: '6px solid #0b0b0b', boxShadow: '0 16px 40px rgba(0,0,0,.6)', opacity: pop(g, fps, 14)}}>
+          <Sequence from={ff}><OffthreadVideo src={staticFile(s.pip)} muted style={{width: 250, display: 'block'}} /></Sequence>
         </div>
       )}
       {/* checks */}
       <div style={{position: 'absolute', left: 60, right: 60, top: 1240, display: 'flex', flexWrap: 'wrap', gap: 14}}>
         {s.checks.map(([k, ok], j) => {
-          const q = pop(f, fps, 10 + j * 4);
+          const q = pop(g, fps, 10 + j * 4);
           return (
             <div key={k} style={{opacity: q, transform: `scale(${0.8 + 0.2 * q})`, background: ok ? 'rgba(244,241,234,.95)' : 'rgba(15,15,14,.85)', color: ok ? C.bg : '#8C8A85', border: ok ? 'none' : '2px solid #4a4845', borderRadius: 16, padding: '8px 22px 12px', fontSize: 46, fontWeight: 800, textDecoration: ok ? 'none' : 'line-through'}}>{ok ? '✓ ' : ''}{k}</div>
           );
         })}
       </div>
-      <div style={{position: 'absolute', left: 60, right: 60, top: 1360, fontSize: 46, fontWeight: 700, color: '#D6D2CA', opacity: pop(f, fps, 30)}}>Progress: <span style={{color: C.ink}}>{s.progress}</span></div>
+      <div style={{position: 'absolute', left: 60, right: 60, top: 1360, fontSize: 46, fontWeight: 700, color: '#D6D2CA', opacity: pop(g, fps, 30)}}>Progress: <span style={{color: C.ink}}>{s.progress}</span></div>
     </AbsoluteFill>
   );
 };
