@@ -1,0 +1,62 @@
+{
+ "series": "TRAIN AT HOME · EP 1",
+ "hook": {
+  "clip": "clips/home/act_hb.mp4",
+  "frames": 115,
+  "dur": 2.8,
+  "top": "No time for the gym?",
+  "bottom": "Train your fingers\nat home."
+ },
+ "title": "5 setups. Pick yours.",
+ "intro": 0,
+ "per": 2.8,
+ "tiles": [
+  {
+   "clip": "clips/home/act_hb.mp4",
+   "frames": 115,
+   "name": "Hangboard\n+ weight belt",
+   "line": "The classic.\nHangs + weighted pull-ups.",
+   "y": 0.15
+  },
+  {
+   "clip": "clips/home/act_he.mp4",
+   "frames": 110,
+   "name": "Hangboard\n+ force plate",
+   "line": "See your kg live.\nTrack your progress.",
+   "digital": true,
+   "y": 0.3,
+   "pip": "clips/home/pip_entralpi.mp4",
+   "pipFrames": 108
+  },
+  {
+   "clip": "clips/home/act_ag.mp4",
+   "frames": 115,
+   "name": "Grip tools\n+ Loading Pin",
+   "line": "No drilling. Crimp, sloper,\npinch, one hand at a time.",
+   "y": 0.6
+  },
+  {
+   "clip": "clips/home/act_dg.mp4",
+   "frames": 115,
+   "name": "Grip tools\n+ Tindeq",
+   "line": "No weights, no drilling.\nMeasures every pull.",
+   "digital": true,
+   "y": 0.55,
+   "pip": "clips/home/pip_tindeq.mp4",
+   "pipFrames": 116
+  },
+  {
+   "clip": "clips/home/act_pps.mp4",
+   "frames": 116,
+   "name": "PPS\n+ grip tools",
+   "line": "Hang it anywhere: a branch,\na staircase. Grip + pulling.",
+   "y": 0.15
+  }
+ ],
+ "end": {
+  "dur": 3.6,
+  "title": "Next episodes:\na full session\nper setup.",
+  "next": "Strength only. Endurance &\ntechnique: on the wall.",
+  "q": "Which one would you pick? ↓"
+ }
+}

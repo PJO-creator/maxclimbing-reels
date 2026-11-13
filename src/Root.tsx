@@ -30,6 +30,8 @@ import ice from '../data/ice.json';
 import ice2 from '../data/ice-v2.json';
 import {HomeOverview, homeTotal, HomeContent} from './HomeOverview';
 import home from '../data/home.json';
+import {HomePicker, pickerParts, PickerContent} from './HomePicker';
+import homePicker from '../data/home-picker.json';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -75,6 +77,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ice" component={IceReel} durationInFrames={iceTotal(ice as unknown as IceContent)} fps={30} width={1080} height={1920} defaultProps={{content: ice as unknown as IceContent}} />
     <Composition id="ice-v2" component={IceReel} durationInFrames={iceTotal(ice2 as unknown as IceContent)} fps={30} width={1080} height={1920} defaultProps={{content: ice2 as unknown as IceContent}} />
     <Composition id="home" component={HomeOverview} durationInFrames={homeTotal(home as unknown as HomeContent)} fps={30} width={1080} height={1920} defaultProps={{content: home as unknown as HomeContent}} />
+    <Composition id="home-picker" component={HomePicker} durationInFrames={pickerParts(homePicker as unknown as PickerContent).total} fps={30} width={1080} height={1920} defaultProps={{content: homePicker as unknown as PickerContent}} />
     <Composition id="entralpi-learn" component={EntralpiLearn} durationInFrames={entralpiTimeline(entralpi as EntralpiContent).total} fps={30} width={1080} height={1920} defaultProps={{content: entralpi as EntralpiContent}} />
   </>
 );
