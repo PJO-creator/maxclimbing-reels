@@ -109,8 +109,11 @@ const Grid: React.FC<{c: PickerContent}> = ({c}) => {
         );
       })()}
       <div key={'c' + k} style={{position: 'absolute', left: 60, right: 60, top: 1420, opacity: hl, transform: `translateY(${(1 - hl) * 24}px)`}}>
-        <div style={{fontSize: 46, fontWeight: 800, color: '#FF6A5C', letterSpacing: 0.5}}>{k + 1}/{c.tiles.length} · {cur.name.replace(/\n/g, ' ')}</div>
-        <div style={{fontSize: 62, fontWeight: 800, lineHeight: 1.08, letterSpacing: -1, marginTop: 10, whiteSpace: 'pre-line'}}>{cur.line}</div>
+        <div style={{display: 'flex', alignItems: 'center', gap: 18}}>
+          <div style={{background: C.accent, borderRadius: 12, padding: '2px 14px 6px', fontSize: 40, fontWeight: 800}}>{k + 1}/{c.tiles.length}</div>
+          <div style={{fontSize: 70, fontWeight: 800, letterSpacing: -1.4, lineHeight: 1.05, whiteSpace: 'nowrap'}}>{cur.name.replace(/\n/g, ' ')}</div>
+        </div>
+        <div style={{fontSize: 48, fontWeight: 600, lineHeight: 1.15, color: '#C9C5BD', marginTop: 16, whiteSpace: 'pre-line'}}>{cur.line}</div>
       </div>
     </AbsoluteFill>
   );
