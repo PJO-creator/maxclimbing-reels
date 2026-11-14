@@ -6,7 +6,7 @@ import {C, FONT, sec} from './PPSReel';
 type Tile = {clip: string; frames: number; name: string; line: string; digital?: boolean; y?: number; crop?: [number, number]; mark?: {x: number; y: number; label: string; dx?: number; dy?: number; track?: [number, number][]}; pip?: string; pipFrames?: number};
 export type PickerContent = {
   series: string;
-  hook: {clip: string; frames: number; dur: number; top: string; bottom: string};
+  hook: {clip: string; frames: number; dur: number; top: string; bottom: string; q?: string};
   title: string;
   intro: number; // seconds of grid before the first highlight
   per: number; // seconds per highlight
@@ -35,6 +35,7 @@ const Hook: React.FC<{c: PickerContent}> = ({c}) => {
         <div style={{display: 'inline-block', background: C.accent, borderRadius: 12, padding: '4px 18px 8px', fontSize: 36, fontWeight: 800, letterSpacing: 3}}>{c.series}</div>
         <div style={{fontSize: 88, fontWeight: 800, lineHeight: 1.03, letterSpacing: -1.6, marginTop: 20, textShadow: '0 2px 18px rgba(0,0,0,.6)'}}>{h.top}</div>
         <div style={{fontSize: 88, fontWeight: 800, lineHeight: 1.03, letterSpacing: -1.6, color: '#FFD9D4', opacity: pop(f, fps, 22), textShadow: '0 2px 18px rgba(0,0,0,.6)', whiteSpace: 'pre-line'}}>{h.bottom}</div>
+        {h.q && <div style={{display: 'inline-block', marginTop: 34, opacity: pop(f, fps, 44), transform: `scale(${0.9 + 0.1 * pop(f, fps, 44)})`, transformOrigin: 'left center', background: C.accent, borderRadius: 16, padding: '8px 26px 12px', fontSize: 54, fontWeight: 800}}>{h.q}</div>}
       </div>
     </AbsoluteFill>
   );
