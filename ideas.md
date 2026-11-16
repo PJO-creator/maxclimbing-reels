@@ -4,36 +4,43 @@ Living file. After each reel: log the numbers at ~72 h (and 7 days if it's still
 
 ## 1. Performance log
 
-Source: Metricool (Instagram), pulled 2026-11-09 (previous pull 2026-11-06). View rate = % of views that watched > 3 s (the hook metric). Length = video length (from TikTok upload).
+Source: Metricool (Instagram), pulled 2026-11-16 (previous pull 2026-11-09). View rate = % of views that watched > 3 s (the hook metric). Length = video length (from TikTok upload).
 
 | Posted | Reel | Format | Views | Reach | View rate | Avg watch | Likes | Comments | Saves | Shares | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 27 Oct | PPS A (product ad) | product ad | 2,041 | 1,677 | 68.4% | 9.3 s | 24 | 0 | 4 | 11 | ad = few saves |
-| 27 Oct | PPS B (how-to) | how-to steps | 7,113 | 5,717 | 71.0% | 12.8 s | 84 | 1 | 71 | 44 | 9 follows, 12 bio taps |
-| 28 Oct | PPS C (3D how-to) | 3D how-to | 7,481 | 5,894 | 72.0% | 12.1 s | 84 | 0 | 77 | 17 | felt like an ad, 1 follow |
-| **30 Oct** | **PPS B2** (how-to + weighted pull-ups) | how-to steps | **110,371** | 81,143 | 69.8% | **13.2 s** (25 s long) | 1,653 | 30 | **1,408** | **836** | ~30 PPS sold; caption "Send this to the friend who's been almost there for 2 years"; still growing (+9k since 6 Nov) |
-| 30 Oct | Entralpi "train at your level" | how-to, footage + app | 2,162 | 1,772 | 56.7% | 7.4 s | 15 | 0 | 9 | 1 | weaker hook, felt static |
-| 4 Nov | Rank: climbing A–E | ranking over loop | 4,993 | 2,942 | 56.3% | 10.2 s | 28 | 4 | 14 | 11 | late grower: 1.6k → 5.0k between day 2 and day 5 |
-| 5 Nov | Rank: fitness A–E | ranking over loop | 1,929 | 1,253 | 47.0% | 9.5 s (12 s long) | 21 | 22 | 6 | 3 | most comments of the week, lowest hook rate |
-| 5 Nov | Pinch v2 (split, no hook clip) | split A vs B | 2,496 | 2,041 | 58.6% | 7.1 s (17 s long) | 28 | 0 | 31 | 4 | caption names the gear |
-| 6 Nov | Pinch v6 (climb hook + radar zoom) | hook clip + split | 2,605 | 2,161 | 54.5% | 8.5 s (26 s long) | 32 | 2 | 17 | 4 | hook clip did not lift view rate vs v2 |
+| 27 Oct | PPS A (product ad) | product ad | 2,057 | 1,693 | 68.3% | 9.2 s | 24 | 0 | 4 | 11 | ad = few saves |
+| 27 Oct | PPS B (how-to) | how-to steps | 7,926 | 6,396 | 70.5% | 12.6 s | 96 | 1 | 80 | 49 | 9 follows, 12 bio taps |
+| 28 Oct | PPS C (3D how-to) | 3D how-to | 7,977 | 6,272 | 71.4% | 12.0 s | 89 | 0 | 87 | 21 | felt like an ad, 1 follow |
+| **30 Oct** | **PPS B2** (how-to + weighted pull-ups) | how-to steps | **118,477** | 87,196 | 69.5% | **13.0 s** (25 s long) | 1,771 | 35 | **1,494** | **893** | ~30 PPS sold; caption "Send this to the friend who's been almost there for 2 years"; still growing (+8k since 9 Nov) |
+| 30 Oct | Entralpi "train at your level" | how-to, footage + app | 2,175 | 1,784 | 56.6% | 7.4 s | 15 | 0 | 9 | 1 | weaker hook, felt static |
+| 4 Nov | Rank: climbing A–E | ranking over loop | 6,121 | 3,504 | 57.3% | 10.4 s | 34 | 5 | 22 | 12 | late grower: 1.6k (day 2) → 5.0k (day 5) → 6.1k (day 12) |
+| 5 Nov | Rank: fitness A–E | ranking over loop | 1,932 | 1,254 | 47.1% | 9.5 s (12 s long) | 21 | 22 | 6 | 3 | most comments of its week, lowest hook rate |
+| 5 Nov | Pinch v2 (split, no hook clip) | split A vs B | 2,633 | 2,121 | 59.0% | 7.2 s (17 s long) | 29 | 0 | 34 | 5 | caption names the gear |
+| 6 Nov | Pinch v6 (climb hook + radar zoom) | hook clip + split | 3,001 | 2,431 | 55.1% | 8.8 s (26 s long) | 36 | 2 | 23 | 5 | hook clip did not lift view rate vs v2 |
+| **10 Nov** | **Elbow: pronation/supination** (antagonists ep. 1) | problem + anatomy + protocol | **13,365** | 10,898 | 67.2% | 12.2 s | 232 | 2 | **370** | **149** | 2nd best ever; "Your fingers got strong. Are your elbows ready for it?" |
+| 11 Nov | Footwork: stack vs roll | technique, 2 ways | 5,775 | 4,724 | 62.1% | 8.3 s | 68 | 1 | 32 | 33 | Footwork Panel named in caption |
+| 12 Nov | Ice axes v1 ("Pull the wrong way and this happens") | fail/spectacle hook | 2,014 | 1,434 | 68.5% | 9.5 s | 12 | 0 | 1 | 0 | strong hook, nothing to save/share |
+| 12 Nov | Ice axes v2 ("Sloppy pull? The pick pops.") | full sequence | 1,703 | 1,294 | 66.6% | 8.8 s | 8 | 0 | 2 | 2 | same pattern as v1 |
+| 14 Nov | Train at Home ep. 1 (5 setups) | series intro, setup overview | 129 | 121 | **30.5%** | 3.3 s | 2 | 1 | 1 | 0 | only 2 days old at pull; lowest hook rate ever; re-check next week (trial reel?) |
 
-**Followers (Instagram):** 3,560 (4 Nov) → 3,613 (8 Nov). Week 2–7 Nov: +122 gained, −6 lost. (31 Oct alone: +149, the B2 spike.)
+**Followers (Instagram):** 3,560 (4 Nov) → 3,613 (8 Nov) → 3,751 (14 Nov). Week 9–13 Nov: +140 gained, −9 lost (11 Nov: +50, the day after the elbow reel). Week 2–7 Nov: +122 / −6.
 
-### TikTok (reposts, pulled 2026-11-09)
+### TikTok (reposts, pulled 2026-11-16)
+
+No new TikTok posts since 6 Nov. Numbers barely moved.
 
 | Posted | Reel | Length | Views | Reach | Avg watch | Likes | Comments | Shares |
 |---|---|---|---|---|---|---|---|---|
 | 5 Nov | Rank: fitness A–E | 12 s | 2 | 2 | 2 s | 1 | 0 | 0 |
-| 5 Nov | PPS B2 (one-arm pull-up how-to) | 25 s | 78 | 66 | 8 s | 3 | 0 | 0 |
-| 5 Nov | Pinch v2 | 17 s | 84 | 72 | 4 s | 3 | 0 | 0 |
-| 6 Nov | Pinch v6 | 26 s | 88 | 78 | 5 s | 5 | 0 | 0 |
+| 5 Nov | PPS B2 (one-arm pull-up how-to) | 25 s | 78 | 67 | 7 s | 3 | 0 | 0 |
+| 5 Nov | Pinch v2 | 17 s | 86 | 75 | 3 s | 3 | 0 | 0 |
+| 6 Nov | Pinch v6 | 26 s | 92 | 82 | 5 s | 5 | 0 | 0 |
 
 ## 2. What we've learned so far
 
 - **Hook rate tells the story.** All PPS reels hold 69–72% past 3 s; Entralpi 56%, rankings 46–55%. Start with a recognisable action + a goal.
-- **Shares drive the big one.** B2 got 763 shares (others: 1–43). Its caption opened with "Send this to the friend who's been almost there for 2 years". Use a share prompt aimed at a specific friend.
-- **Saves follow protocols.** B2 1,311 saves, B 69, C 62 vs rankings 2–4 and Entralpi 9.
+- **Shares drive the big one.** B2 got 893 shares (others: 0–149). Its caption opened with "Send this to the friend who's been almost there for 2 years". Use a share prompt aimed at a specific friend.
+- **Saves follow protocols.** B2 1,494 saves, elbow 370, B 80, C 87 vs rankings 6–22, Entralpi 9, ice axes 1–2.
 - **Goal hooks beat method hooks.** "How to train for a one-arm pull-up" (a goal people want) >> "Pinch: squeeze or hold?" (a question few ask).
 - **Informative beats ad-like.** B (teaching) got 9 follows, C (felt like an ad) got 1, with more views.
 - **Follows need a future.** One-off discussion reels (ranking) get comments but no follows. How-tos and series give a reason to follow.
@@ -45,6 +52,8 @@ Source: Metricool (Instagram), pulled 2026-11-09 (previous pull 2026-11-06). Vie
 - **Regular reels can go big too.** B2 hit 100k as a normal reel. Trial reels = testing tool, not a reach trick. Keep auto-share off.
 - **A climbing hook clip alone doesn't fix the hook.** Pinch v6 (climb clip + radar zoom) held 54.5% past 3 s vs 58.6% for v2 without it, and got fewer saves (17 vs 31). The topic ("pinch: squeeze or hold?") is the limit, not the first frame.
 - **TikTok doesn't carry over (yet).** B2 = 110k on Instagram, 78 views as a TikTok repost; all 4 reposts got 2–88 views, 0 shares. Reposting gives no TikTok distribution on this account so far.
+- **A strong hook without a takeaway goes nowhere.** Ice axes v1/v2 held 67–69% past 3 s (PPS level) but got 1–2 saves, 0–2 shares and stalled at ~2k views. Elbow (67%) had the same hook rate and got 370 saves, 149 shares, 13k views. Hook gets the view; a protocol/problem gets the save and share that drive reach.
+- **Problem + protocol works beyond PPS.** Elbow (no PPS, no milestone goal) = 2nd best reel ever. The recipe from 2b holds for a "pain/prevention" problem, not only for a goal.
 - **Check rankings again at day 5–7.** Climbing ranking went 1.6k → 5.0k views between day 2 and day 5; how-tos peak faster.
 - **Be honest in claims.** Only promise what we'll actually measure; say "our take", not "the only way".
 
@@ -58,7 +67,7 @@ Source: Metricool (Instagram), pulled 2026-11-09 (previous pull 2026-11-06). Vie
 Implication for us: real footage of climbers + real numbers overlaid (testing station, Max Games, comps, Entralpi live kg) is our unique angle. Avoid product-only and static scenes.
 
 ## 2b. Starting point for every reel: goal → problem → product
-Pieterjan's product question "which problem does this solve?" is also the reel's angle. PPS reel = goal (one-arm pull-up) + protocol → 101k views, ~31 sales. Elbow reel = problem (elbow pain) + protocol → 194 saves.
+Pieterjan's product question "which problem does this solve?" is also the reel's angle. PPS reel = goal (one-arm pull-up) + protocol → 101k views, ~31 sales. Elbow reel = problem (elbow pain) + protocol → 13.4k views, 370 saves.
 
 | Goal | Problem | Product | Reel idea |
 |---|---|---|---|
@@ -93,7 +102,7 @@ Plus:
 - **PPS follow-up** – wait until January (100 new units).
 
 ### Series: "Climber's body: antagonists" (same recipe as the elbow reel: problem hook + own anatomy drawing + tracked muscles + protocol)
-Elbow reel (10 Nov) = best since B2: 7.9k views, 194 saves, 63 shares.
+Elbow reel (10 Nov) = best since B2: 13.4k views, 370 saves, 149 shares (pull 16 Nov).
 1. Elbow: pronation/supination ✅ posted
 2. Shoulders: face pulls, external rotation, scap pulls/Y-raise (bands: YY Vertical Elastic Bands, blue 5 kg)
 3. Chest / front delts: push-ups, dips (antagonist of lats)
