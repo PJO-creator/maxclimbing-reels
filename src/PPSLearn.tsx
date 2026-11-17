@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Easing, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {BarDiagram, C, FONT, Intro, Out, Safe, sec, useIn} from './PPSReel';
 import type {Content as AdContent} from './PPSReel';
 
@@ -9,9 +9,11 @@ type Step =
   | {kind: 'progress'; dur: number; n: string; title: string; body: string; path: number[]}
   | {kind: 'tilt'; dur: number; n: string; title: string; body: string}
   | {kind: 'mirror'; dur: number; n: string; title: string; body: string; pct: number}
+  | {kind: 'clip'; dur: number; clip: string; title: string; body: string}
   | {kind: 'combine'; dur: number; n: string; title: string; body: string; cards: {t: string; s: string}[]};
 
 export type LearnContent = {
+  pinch?: boolean;
   intro: AdContent['intro'];
   steps: Step[];
   outro: {dur: number; image: string; title: string; body: string};
@@ -51,15 +53,27 @@ const Header: React.FC<{n: string; title: string; body: string}> = ({n, title, b
   </>
 );
 
-const StepScene: React.FC<{s: Step; dur: number}> = ({s, dur}) => {
+const StepScene: React.FC<{s: Step; dur: number; pinch?: boolean}> = ({s, dur, pinch}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
+  if (s.kind === 'clip') {
+    return (
+      <AbsoluteFill style={{background: C.bg, fontFamily: FONT, color: C.ink}}>
+        <OffthreadVideo src={staticFile(`clips/${s.clip}`)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+        <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,15,14,.92) 0%, rgba(15,15,14,.8) 24%, rgba(15,15,14,0) 42%)'}} />
+        <div style={{position: 'absolute', left: 80, right: 120, top: 220}}>
+          <div style={{...useIn(0), fontSize: 84, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5, whiteSpace: 'pre-line'}}>{s.title}</div>
+          <div style={{...useIn(10), fontSize: 54, fontWeight: 700, lineHeight: 1.2, color: '#E6E2DA', marginTop: 20, whiteSpace: 'pre-line'}}>{s.body}</div>
+        </div>
+      </AbsoluteFill>
+    );
+  }
   let diagram: React.ReactNode = null;
   let badge: React.ReactNode = null;
 
   if (s.kind === 'find' || s.kind === 'progress') {
     const {pct, i0, frac, per} = usePath(s.path, 18, dur, s.kind === 'find' ? 55 : 20);
-    diagram = <BarDiagram pct={pct} tilt={0} />;
+    diagram = <BarDiagram pct={pct} tilt={0} pinch={pinch} />;
     if (s.kind === 'find') {
       const done = i0 >= s.path.length - 1;
       const pop = spring({frame: f - (18 + per * (s.path.length - 1)), fps, config: {damping: 12}});
@@ -77,7 +91,7 @@ const StepScene: React.FC<{s: Step; dur: number}> = ({s, dur}) => {
     }
   } else if (s.kind === 'tilt') {
     const tilt = interpolate(f, [10, 28, 60, 85], [0, -10, -10, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.inOut(Easing.cubic)});
-    diagram = <BarDiagram pct={75} tilt={tilt} />;
+    diagram = <BarDiagram pct={75} tilt={tilt} pinch={pinch} />;
   } else if (s.kind === 'combine') {
     const pop = (i: number) => spring({frame: f - 14 - i * 10, fps, config: {damping: 14}});
     diagram = (
@@ -145,7 +159,7 @@ export const PPSLearn: React.FC<{content: LearnContent}> = ({content: c}) => {
       </Sequence>
       {c.steps.map((s, i) => (
         <Sequence key={i} from={starts[i + 1]} durationInFrames={parts[i + 1]}>
-          <Out dur={parts[i + 1]}><StepScene s={s} dur={parts[i + 1]} /></Out>
+          <Out dur={parts[i + 1]}><StepScene s={s} dur={parts[i + 1]} pinch={c.pinch} /></Out>
         </Sequence>
       ))}
       <Sequence from={starts[starts.length - 1]} durationInFrames={parts[parts.length - 1]}>

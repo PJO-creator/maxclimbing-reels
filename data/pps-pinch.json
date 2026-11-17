@@ -3,7 +3,7 @@
   "clip": "ppspinch/pull.mp4",
   "start": 0.0,
   "dur": 5.5,
-  "question": "How to train for\na one-arm pull-up",
+  "question": "How to train for a\none-arm pull-up\non a pincher",
   "split": "85%",
   "splitSub": "on your pinch hand.\n15% assist.",
   "markerAt": 2.2,
@@ -17,6 +17,13 @@
   }
  },
  "steps": [
+  {
+   "kind": "clip",
+   "dur": 3.2,
+   "clip": "ppspinch/closeup.mp4",
+   "title": "Swap one handle\nfor a pincher.",
+   "body": "Now your thumb has to\nhold every rep."
+  },
   {
    "kind": "find",
    "dur": 5.5,
@@ -36,7 +43,7 @@
    "dur": 5,
    "n": "2",
    "title": "5 reps?\nMove one hole.",
-   "body": "+5% bodyweight\non your pulling arm.",
+   "body": "+5% bodyweight\non your pinch hand.",
    "path": [
     65,
     70,
@@ -63,8 +70,8 @@
      "s": "2–5 heavy reps\nbuilds max force"
     },
     {
-     "t": "Lever bar",
-     "s": "shift load to\none arm in 5% steps"
+     "t": "Lever bar + pincher",
+     "s": "shift load to\nyour pinch hand\nin 5% steps"
     }
    ]
   }
@@ -74,5 +81,6 @@
   "image": "products/pps/Progressive_pulling_system_detail1.jpg",
   "title": "Save this for your\nnext pull session.",
   "body": "Progressive Pulling System"
- }
+ },
+ "pinch": true
 }

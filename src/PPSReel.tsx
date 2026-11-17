@@ -165,7 +165,7 @@ const Product: React.FC<{c: Content}> = ({c}) => {
 // ---------- Diagram (side view of the bar) ----------
 export const BAR = 700;
 // pct = load on the pulling arm; side = which handle is the pulling arm
-export const BarDiagram: React.FC<{pct: number; tilt: number; side?: 'left' | 'right'}> = ({pct, tilt, side = 'right'}) => {
+export const BarDiagram: React.FC<{pct: number; tilt: number; side?: 'left' | 'right'; pinch?: boolean}> = ({pct, tilt, side = 'right', pinch = false}) => {
   const W = 920, H = 680, anchorY = 40, barY = 300;
   const leftX = (W - BAR) / 2;
   const rightX = leftX + BAR;
@@ -186,11 +186,15 @@ export const BarDiagram: React.FC<{pct: number; tilt: number; side?: 'left' | 'r
         {[leftX, rightX].map((x, i) => (
           <g key={i}>
             <line x1={x} y1={barY + 18} x2={x} y2={barY + 150} stroke={C.ink} strokeWidth={5} />
-            <rect x={x - 50} y={barY + 150} width={100} height={26} rx={13} fill={(i === 1) === r ? C.accent : C.muted} />
+            {pinch && (i === 1) === r ? (
+              <rect x={x - 22} y={barY + 140} width={44} height={120} rx={22} fill={C.accent} />
+            ) : (
+              <rect x={x - 50} y={barY + 150} width={100} height={26} rx={13} fill={(i === 1) === r ? C.accent : C.muted} />
+            )}
           </g>
         ))}
-        <text x={rightX + 60} y={barY + 280} textAnchor="end" fontFamily={FONT} {...(r ? big : small)}>{Math.round(r ? pct : 100 - pct)}%</text>
-        <text x={leftX - 60} y={barY + 280} textAnchor="start" fontFamily={FONT} {...(r ? small : big)}>{Math.round(r ? 100 - pct : pct)}%</text>
+        <text x={rightX + 60} y={barY + (pinch ? 360 : 280)} textAnchor="end" fontFamily={FONT} {...(r ? big : small)}>{Math.round(r ? pct : 100 - pct)}%</text>
+        <text x={leftX - 60} y={barY + (pinch ? 360 : 280)} textAnchor="start" fontFamily={FONT} {...(r ? small : big)}>{Math.round(r ? 100 - pct : pct)}%</text>
       </g>
     </svg>
   );
