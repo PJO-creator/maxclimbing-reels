@@ -2,8 +2,8 @@
  "hook": {
   "clip": "clips/pron/grip.mp4",
   "dur": 3.4,
-  "l1": "Your fingers pull.",
-  "l2": "Who holds\nyour wrist?",
+  "l1": "Strong flexors.",
+  "l2": "What about\nyour extensors?",
   "l2At": 1.3
  },
  "anatomy": {
@@ -17,18 +17,18 @@
    {
     "at": 2.2,
     "title": "Your wrist extensors\nattach here.",
-    "sub": "They hold your wrist steady\non every crimp."
+    "sub": "On every crimp they brace your wrist,\nso your fingers can pull."
    },
    {
     "at": 5.0,
-    "title": "They work on every hold,\nbut rarely get trained.",
-    "sub": "So this spot can get overloaded."
+    "title": "All that load goes\nthrough their tendon.",
+    "sub": "More than it can handle?\nThis spot gets irritated."
    }
   ]
  },
  "bridge": {
   "dur": 2.0,
-  "title": "Train the other side:\nyour extensors."
+  "title": "Build it up:\ntrain your extensors."
  },
  "zoom": 1.0,
  "origin": "50% 50%",
