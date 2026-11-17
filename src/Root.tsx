@@ -21,6 +21,7 @@ import pronTest from '../data/pron-test.json';
 import {ElbowReel, elbowParts, ElbowContent} from './ElbowReel';
 import elbow from '../data/elbow.json';
 import elbowOut from '../data/elbow-out.json';
+import elbowOutX from '../data/elbow-out-x.json';
 import {FootSwap, footTotal, FootContent} from './FootSwap';
 import footswap from '../data/footswap.json';
 import {BalletReel, balletTotal, BalletContent} from './BalletReel';
@@ -76,6 +77,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="pron-test" component={MuscleTest} durationInFrames={muscleTestDuration(pronTest as unknown as MuscleTestContent)} fps={30} width={1080} height={1920} defaultProps={{content: pronTest as unknown as MuscleTestContent}} />
     <Composition id="elbow" component={ElbowReel} durationInFrames={elbowParts(elbow as unknown as ElbowContent).total} fps={30} width={1080} height={1920} defaultProps={{content: elbow as unknown as ElbowContent}} />
     <Composition id="elbow-out" component={ElbowReel} durationInFrames={elbowParts(elbowOut as unknown as ElbowContent).total} fps={30} width={1080} height={1920} defaultProps={{content: elbowOut as unknown as ElbowContent}} />
+    <Composition id="elbow-out-x" component={ElbowReel} durationInFrames={elbowParts(elbowOutX as unknown as ElbowContent).total} fps={30} width={1080} height={1920} defaultProps={{content: elbowOutX as unknown as ElbowContent}} />
     <Composition id="footswap" component={FootSwap} durationInFrames={footTotal(footswap as unknown as FootContent)} fps={30} width={1080} height={1920} defaultProps={{content: footswap as unknown as FootContent}} />
     <Composition id="ballet" component={BalletReel} durationInFrames={balletTotal(ballet as unknown as BalletContent)} fps={30} width={1080} height={1920} defaultProps={{content: ballet as unknown as BalletContent}} />
     <Composition id="blooper" component={Blooper} durationInFrames={blooperTotal(blooper as unknown as BlooperContent)} fps={30} width={1080} height={1920} defaultProps={{content: blooper as unknown as BlooperContent}} />

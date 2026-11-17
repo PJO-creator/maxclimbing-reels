@@ -1,12 +1,12 @@
 import React from 'react';
 import {AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, FONT, sec} from './PPSReel';
-import {SegmentView} from './MuscleOverlay';
-import type {Segment} from './MuscleOverlay';
+import {SegmentView, MuscleLayer} from './MuscleOverlay';
+import type {Segment, Muscle, TrackPt} from './MuscleOverlay';
 
 // "Your fingers got strong. Are your elbows ready?" – text-on-screen how-to with muscle overlays.
 export type ElbowContent = {
-  hook: {clip: string; dur: number; l1: string; l2: string; l2At: number};
+  hook: {clip: string; dur: number; l1: string; l2: string; l2At: number; xray?: {track: TrackPt[]; muscles: Muscle[]; at: number}};
   anatomy: {dur: number; side?: 'inside' | 'outside'; steps: {at: number; title: string; sub?: string}[]};
   bridge: {dur: number; title: string};
   zoom: number;
@@ -36,6 +36,32 @@ const Card: React.FC<{children: React.ReactNode; style?: React.CSSProperties}> =
 const H: React.FC<{children: React.ReactNode; size?: number; color?: string}> = ({children, size = 88, color}) => (
   <div style={{fontSize: size, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5, whiteSpace: 'pre-line', color}}>{children}</div>
 );
+
+const HookX: React.FC<{c: ElbowContent['hook']}> = ({c}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const x = c.xray!;
+  const pt = x.track[Math.min(f, x.track.length - 1)];
+  const reveal = interpolate(f, [sec(x.at), sec(x.at) + 10], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const labels = pop(f, fps, sec(x.at) + 10);
+  const ys = x.track.map((p) => p.w[1]);
+  const lo = Math.min(...ys), hi = Math.max(...ys);
+  const pulse = 1 - (pt.w[1] - lo) / Math.max(1, hi - lo);
+  const a = pop(f, fps, 2), b = pop(f, fps, sec(c.l2At));
+  return (
+    <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
+      <OffthreadVideo src={staticFile(c.clip)} muted style={{width: 1080, height: 1920}} />
+      <AbsoluteFill style={{background: `rgba(15,15,14,${0.3 * reveal})`}} />
+      <MuscleLayer pt={pt} muscles={x.muscles} reveal={reveal} pulse={pulse} labels={labels} />
+      <div style={{position: 'absolute', left: 70, right: 70, top: 1390}}>
+        <div style={{opacity: a, transform: `translateY(${(1 - a) * 30}px)`}}><H size={84}>{c.l1}</H></div>
+        <div style={{opacity: b, transform: `translateY(${(1 - b) * 30}px)`, marginTop: 14}}>
+          <H size={84}><span style={{background: C.accent, borderRadius: 12, padding: '0 14px 4px', marginLeft: -6, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone'}}>{c.l2}</span></H>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
 
 const Hook: React.FC<{c: ElbowContent['hook']}> = ({c}) => {
   const f = useCurrentFrame();
@@ -239,7 +265,7 @@ export const ElbowReel: React.FC<{content: ElbowContent}> = ({content: c}) => {
   const m = (c.clips ?? []).length;
   return (
     <AbsoluteFill style={{backgroundColor: C.bg}}>
-      <Sequence from={from[0]} durationInFrames={lens[0]}><Hook c={c.hook} /></Sequence>
+      <Sequence from={from[0]} durationInFrames={lens[0]}>{c.hook.xray ? <HookX c={c.hook} /> : <Hook c={c.hook} />}</Sequence>
       <Sequence from={from[1]} durationInFrames={lens[1]}><Anatomy c={c.anatomy} /></Sequence>
       <Sequence from={from[2]} durationInFrames={lens[2]}><Bridge c={c.bridge} /></Sequence>
       {c.segments.map((s, i) => (
