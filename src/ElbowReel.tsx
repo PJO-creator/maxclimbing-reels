@@ -7,17 +7,18 @@ import type {Segment} from './MuscleOverlay';
 // "Your fingers got strong. Are your elbows ready?" – text-on-screen how-to with muscle overlays.
 export type ElbowContent = {
   hook: {clip: string; dur: number; l1: string; l2: string; l2At: number};
-  anatomy: {dur: number; steps: {at: number; title: string; sub?: string}[]};
+  anatomy: {dur: number; side?: 'inside' | 'outside'; steps: {at: number; title: string; sub?: string}[]};
   bridge: {dur: number; title: string};
   zoom: number;
   origin: string;
   segments: (Segment & {dur: number})[];
+  clips?: {clip?: string; dur: number; title: string; sub: string}[];
   plan: {dur: number; title: string; lines: string[]; note: string};
   outro: {dur: number; title: string};
 };
 
 export const elbowParts = (c: ElbowContent) => {
-  const lens = [sec(c.hook.dur), sec(c.anatomy.dur), sec(c.bridge.dur), ...c.segments.map((s) => sec(s.dur)), sec(c.plan.dur), sec(c.outro.dur)];
+  const lens = [sec(c.hook.dur), sec(c.anatomy.dur), sec(c.bridge.dur), ...c.segments.map((s) => sec(s.dur)), ...(c.clips ?? []).map((s) => sec(s.dur)), sec(c.plan.dur), sec(c.outro.dur)];
   let t = 0;
   const from = lens.map((l) => {
     const f = t;
@@ -59,19 +60,20 @@ const Hook: React.FC<{c: ElbowContent['hook']}> = ({c}) => {
 };
 
 // Own schematic drawing of a right elbow, front view (not a copy of any atlas image).
-const ElbowDiagram: React.FC<{f: number; fps: number; musAt: number; load: number}> = ({f, fps, musAt, load}) => {
+const ElbowDiagram: React.FC<{f: number; fps: number; musAt: number; load: number; side?: 'inside' | 'outside'}> = ({f, fps, musAt, load, side = 'inside'}) => {
+  const out = side === 'outside';
   const bones = interpolate(f, [0, 12], [0, 1], {extrapolateRight: 'clamp'});
   const mus = interpolate(f, [musAt, musAt + 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const dot = pop(f, fps, musAt + 10);
   const elbowLbl = pop(f, fps, 8);
   const pulse = 0.5 + 0.5 * Math.sin(f / 5);
   const bone = '#E9E4DA';
-  const ME: [number, number] = [372, 610]; // medial epicondyle
+  const ME: [number, number] = out ? [692, 612] : [372, 610]; // medial (inside) or lateral (outside) epicondyle
   const spindle = (a: [number, number], b: [number, number], w: number) => {
     const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy), nx = -dy / l, ny = dx / l;
     return `M ${a[0]} ${a[1]} C ${a[0] + dx * 0.2 + nx * w} ${a[1] + dy * 0.2 + ny * w} ${a[0] + dx * 0.8 + nx * w} ${a[1] + dy * 0.8 + ny * w} ${b[0]} ${b[1]} C ${a[0] + dx * 0.8 - nx * w} ${a[1] + dy * 0.8 - ny * w} ${a[0] + dx * 0.2 - nx * w} ${a[1] + dy * 0.2 - ny * w} ${a[0]} ${a[1]} Z`;
   };
-  const flexors: [number, number][] = [[400, 1240], [455, 1260], [515, 1250]];
+  const flexors: [number, number][] = out ? [[640, 1250], [700, 1265], [765, 1245]] : [[400, 1240], [455, 1260], [515, 1250]];
   return (
     <svg width={1080} height={1150} viewBox="0 0 1080 1500" style={{position: 'absolute', left: 0, top: 560}}>
       <defs>
@@ -96,19 +98,48 @@ const ElbowDiagram: React.FC<{f: number; fps: number; musAt: number; load: numbe
       </g>
       {/* elbow bracket */}
       <g opacity={elbowLbl} fontFamily={FONT} fontWeight={800}>
-        <path d="M 760 520 L 800 520 L 800 760 L 760 760" fill="none" stroke="#FFFFFF" strokeWidth={6} />
-        <text x={830} y={665} fill="#FFFFFF" fontSize={78}>ELBOW</text>
+        {out ? (
+          <>
+            <path d="M 320 520 L 280 520 L 280 760 L 320 760" fill="none" stroke="#FFFFFF" strokeWidth={6} />
+            <text x={250} y={665} fill="#FFFFFF" fontSize={78} textAnchor="end">ELBOW</text>
+          </>
+        ) : (
+          <>
+            <path d="M 760 520 L 800 520 L 800 760 L 760 760" fill="none" stroke="#FFFFFF" strokeWidth={6} />
+            <text x={830} y={665} fill="#FFFFFF" fontSize={78}>ELBOW</text>
+          </>
+        )}
       </g>
       {/* labels */}
       <g opacity={mus} fontFamily={FONT} fontWeight={800} fontSize={44} letterSpacing={1.5}>
-        <line x1={455} y1={1150} x2={250} y2={1210} stroke="#FFF" strokeWidth={4} />
-        <rect x={0} y={1182} width={390} height={66} rx={12} fill={C.accent} />
-        <text x={16} y={1230} fill={C.ink}>FINGER FLEXORS</text>
+        {out ? (
+          <>
+            <line x1={720} y1={1180} x2={820} y2={1300} stroke="#FFF" strokeWidth={4} />
+            <rect x={590} y={1300} width={470} height={66} rx={12} fill={C.accent} />
+            <text x={606} y={1348} fill={C.ink}>WRIST EXTENSORS</text>
+          </>
+        ) : (
+          <>
+            <line x1={455} y1={1150} x2={250} y2={1210} stroke="#FFF" strokeWidth={4} />
+            <rect x={0} y={1182} width={390} height={66} rx={12} fill={C.accent} />
+            <text x={16} y={1230} fill={C.ink}>FINGER FLEXORS</text>
+          </>
+        )}
       </g>
       <g opacity={dot} fontFamily={FONT} fontWeight={800} fontSize={44} letterSpacing={1.5}>
-        <line x1={ME[0] - 30} y1={ME[1] - 10} x2={200} y2={520} stroke="#FFF" strokeWidth={4} />
-        <rect x={0} y={447} width={360} height={66} rx={12} fill="#FFFFFF" />
-        <text x={16} y={495} fill={C.bg}>INSIDE ELBOW</text>
+        {out ? (
+          <>
+            <line x1={ME[0] + 30} y1={ME[1] - 10} x2={860} y2={515} stroke="#FFF" strokeWidth={4} />
+            <rect x={650} y={447} width={400} height={66} rx={12} fill="#FFFFFF" />
+            <text x={666} y={495} fill={C.bg}>OUTSIDE ELBOW</text>
+          </>
+        ) : (
+          <>
+            <line x1={ME[0] - 30} y1={ME[1] - 10} x2={200} y2={520} stroke="#FFF" strokeWidth={4} />
+            <rect x={0} y={447} width={360} height={66} rx={12} fill="#FFFFFF" />
+            <text x={16} y={495} fill={C.bg}>INSIDE ELBOW</text>
+          </>
+        )}
       </g>
     </svg>
   );
@@ -127,7 +158,7 @@ const Anatomy: React.FC<{c: ElbowContent['anatomy']}> = ({c}) => {
   const load = steps.length > 2 ? interpolate(f, [sec(steps[2].at), sec(steps[2].at) + 20], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 0;
   return (
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, #2a2826 0%, #151514 60%, #0F0F0E 100%)', fontFamily: FONT, color: C.ink}}>
-      <ElbowDiagram f={f} fps={fps} musAt={musAt} load={load} />
+      <ElbowDiagram f={f} fps={fps} musAt={musAt} load={load} side={c.side} />
       <div style={{position: 'absolute', left: 70, right: 70, top: 270, opacity: t * out, transform: `translateY(${(1 - t) * 30}px)`}}>
         <H size={76}>{st.title}</H>
         {st.sub && <div style={{fontSize: 48, fontWeight: 600, color: '#D6D2CA', marginTop: 14, whiteSpace: 'pre-line'}}>{st.sub}</div>}
@@ -144,6 +175,26 @@ const Bridge: React.FC<{c: ElbowContent['bridge']}> = ({c}) => {
     <AbsoluteFill style={{backgroundColor: C.bg, fontFamily: FONT, color: C.ink}}>
       <div style={{position: 'absolute', left: 70, right: 70, top: 820, opacity: p, transform: `scale(${0.92 + p * 0.08})`}}>
         <H size={96}>{c.title}</H>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const ClipScene: React.FC<{c: NonNullable<ElbowContent['clips']>[number]}> = ({c}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const t = pop(f, fps, 4);
+  return (
+    <AbsoluteFill style={{backgroundColor: '#2a2826', fontFamily: FONT, color: C.ink}}>
+      {c.clip ? (
+        <OffthreadVideo src={staticFile(c.clip)} muted style={{width: 1080, height: 1920, objectFit: 'cover'}} />
+      ) : (
+        <div style={{position: 'absolute', left: 80, right: 80, top: 700, border: '4px dashed #6b6762', borderRadius: 30, padding: 60, fontSize: 52, fontWeight: 700, color: '#9b968e', textAlign: 'center'}}>[clip: {c.title}]</div>
+      )}
+      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,15,14,0) 52%, rgba(15,15,14,.82) 66%, rgba(15,15,14,.97) 80%)'}} />
+      <div style={{position: 'absolute', left: 70, right: 70, top: 1240, opacity: t, transform: `translateY(${(1 - t) * 30}px)`}}>
+        <div style={{fontSize: 92, fontWeight: 800, lineHeight: 1.04, letterSpacing: -1.5}}>{c.title}</div>
+        <div style={{fontSize: 54, fontWeight: 600, color: '#D6D2CA', marginTop: 12, whiteSpace: 'pre-line'}}>{c.sub}</div>
       </div>
     </AbsoluteFill>
   );
@@ -185,6 +236,7 @@ const Outro: React.FC<{c: ElbowContent['outro']}> = ({c}) => {
 export const ElbowReel: React.FC<{content: ElbowContent}> = ({content: c}) => {
   const {lens, from} = elbowParts(c);
   const n = c.segments.length;
+  const m = (c.clips ?? []).length;
   return (
     <AbsoluteFill style={{backgroundColor: C.bg}}>
       <Sequence from={from[0]} durationInFrames={lens[0]}><Hook c={c.hook} /></Sequence>
@@ -193,8 +245,11 @@ export const ElbowReel: React.FC<{content: ElbowContent}> = ({content: c}) => {
       {c.segments.map((s, i) => (
         <Sequence key={i} from={from[3 + i]} durationInFrames={lens[3 + i]}><SegmentView s={s} zoom={c.zoom} origin={c.origin} /></Sequence>
       ))}
-      <Sequence from={from[3 + n]} durationInFrames={lens[3 + n]}><Plan c={c.plan} /></Sequence>
-      <Sequence from={from[4 + n]} durationInFrames={lens[4 + n]}><Outro c={c.outro} /></Sequence>
+      {(c.clips ?? []).map((s, i) => (
+        <Sequence key={'c' + i} from={from[3 + n + i]} durationInFrames={lens[3 + n + i]}><ClipScene c={s} /></Sequence>
+      ))}
+      <Sequence from={from[3 + n + m]} durationInFrames={lens[3 + n + m]}><Plan c={c.plan} /></Sequence>
+      <Sequence from={from[4 + n + m]} durationInFrames={lens[4 + n + m]}><Outro c={c.outro} /></Sequence>
     </AbsoluteFill>
   );
 };
