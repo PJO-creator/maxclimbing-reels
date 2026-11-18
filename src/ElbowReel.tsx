@@ -6,14 +6,14 @@ import type {Segment, Muscle, TrackPt} from './MuscleOverlay';
 
 // "Your fingers got strong. Are your elbows ready?" – text-on-screen how-to with muscle overlays.
 export type ElbowContent = {
-  hook: {clip: string; dur: number; l1: string; l2: string; l2At: number; xray?: {track: TrackPt[]; muscles: Muscle[]; at: number}};
+  hook: {clip: string; dur: number; l1: string; l2: string; l2At: number; top?: number; xray?: {track: TrackPt[]; muscles: Muscle[]; at: number}};
   anatomy: {dur: number; side?: 'inside' | 'outside'; steps: {at: number; title: string; sub?: string}[]};
   bridge: {dur: number; title: string};
   zoom: number;
   origin: string;
   segments: (Segment & {dur: number})[];
   clips?: {clip?: string; dur: number; title: string; sub: string}[];
-  plan: {dur: number; title: string; lines: string[]; note: string; inset?: {clip: string; frames: number; label?: string}};
+  plan: {dur: number; title: string; lines: string[]; note: string; inset?: {clip: string; frames: number; label?: string}; sections?: {label: string; lines: string[]; inset?: boolean}[]};
   outro: {dur: number; title: string};
 };
 
@@ -73,7 +73,7 @@ const Hook: React.FC<{c: ElbowContent['hook']}> = ({c}) => {
       <AbsoluteFill style={{transform: `scale(${z})`}}>
         <OffthreadVideo src={staticFile(c.clip)} style={{width: 1080, height: 1920, objectFit: 'cover'}} />
       </AbsoluteFill>
-      <div style={{position: 'absolute', left: 70, right: 70, top: 300}}>
+      <div style={{position: 'absolute', left: 70, right: 70, top: c.top ?? 300}}>
         <Card style={{opacity: a, transform: `translateY(${(1 - a) * -30}px)`}}>
           <H>{c.l1}</H>
           <div style={{height: b * 200, overflow: 'hidden', paddingTop: 10}}>
@@ -233,7 +233,36 @@ const Plan: React.FC<{c: ElbowContent['plan']}> = ({c}) => {
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 40%, #2a2826 0%, #151514 60%, #0F0F0E 100%)', fontFamily: FONT, color: C.ink}}>
       <div style={{position: 'absolute', left: 80, right: 80, top: 360}}>
         <div style={{opacity: pop(f, fps, 2)}}><H size={92}>{c.title}</H></div>
-        {c.lines.map((l, i) => {
+        {c.sections && (() => {
+          let k = 0;
+          return c.sections.map((sec_, si) => {
+            const q0 = pop(f, fps, 10 + k * 9);
+            const block = (
+              <div key={si} style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginTop: si === 0 ? 50 : 56}}>
+                <div>
+                  <div style={{opacity: q0, fontSize: 40, fontWeight: 800, letterSpacing: 3, color: '#FF6A5C'}}>{sec_.label}</div>
+                  {sec_.lines.map((l, i) => {
+                    const q = pop(f, fps, 10 + (k + i + 1) * 9);
+                    return (
+                      <div key={i} style={{display: 'flex', alignItems: 'center', gap: 24, marginTop: 22, opacity: q, transform: `translateX(${(1 - q) * -40}px)`}}>
+                        <div style={{width: 20, height: 20, borderRadius: 10, background: C.accent, flexShrink: 0}} />
+                        <div style={{fontSize: 58, fontWeight: 800, lineHeight: 1.1, letterSpacing: -1}}>{l}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {sec_.inset && c.inset && (
+                  <div style={{width: 270, height: 270, borderRadius: 24, overflow: 'hidden', border: `5px solid ${C.accent}`, boxShadow: '0 16px 40px rgba(0,0,0,.6)', flexShrink: 0, opacity: q0, transform: `scale(${0.85 + 0.15 * q0})`}}>
+                    <Loop durationInFrames={c.inset.frames} layout="none"><OffthreadVideo src={staticFile(c.inset.clip)} muted style={{width: 260, height: 260, display: 'block'}} /></Loop>
+                  </div>
+                )}
+              </div>
+            );
+            k += sec_.lines.length + 1;
+            return block;
+          });
+        })()}
+        {!c.sections && c.lines.map((l, i) => {
           const q = pop(f, fps, 10 + i * 9);
           return (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 28, marginTop: 40, opacity: q, transform: `translateX(${(1 - q) * -40}px)`}}>
@@ -242,9 +271,9 @@ const Plan: React.FC<{c: ElbowContent['plan']}> = ({c}) => {
             </div>
           );
         })}
-        <div style={{fontSize: 42, fontWeight: 600, color: '#BDB8AF', marginTop: 60, opacity: pop(f, fps, 10 + c.lines.length * 9 + 6)}}>{c.note}</div>
+        <div style={{fontSize: 42, fontWeight: 600, color: '#BDB8AF', marginTop: 60, opacity: pop(f, fps, 10 + (c.sections ? c.sections.reduce((a, x) => a + x.lines.length + 1, 0) : c.lines.length) * 9 + 6)}}>{c.note}</div>
       </div>
-      {c.inset && (
+      {c.inset && !c.sections && (
         <div style={{position: 'absolute', right: 60, top: 500, width: 320, opacity: pop(f, fps, 14), transform: `scale(${0.85 + 0.15 * pop(f, fps, 14)})`}}>
           <div style={{width: 320, height: 320, borderRadius: 26, overflow: 'hidden', border: `5px solid ${C.accent}`, boxShadow: '0 16px 40px rgba(0,0,0,.6)'}}>
             <Loop durationInFrames={c.inset.frames} layout="none"><OffthreadVideo src={staticFile(c.inset.clip)} muted style={{width: 310, height: 310, display: 'block'}} /></Loop>
