@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Loop, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, FONT, sec} from './PPSReel';
 import {SegmentView, MuscleLayer} from './MuscleOverlay';
 import type {Segment, Muscle, TrackPt} from './MuscleOverlay';
@@ -13,7 +13,7 @@ export type ElbowContent = {
   origin: string;
   segments: (Segment & {dur: number})[];
   clips?: {clip?: string; dur: number; title: string; sub: string}[];
-  plan: {dur: number; title: string; lines: string[]; note: string};
+  plan: {dur: number; title: string; lines: string[]; note: string; inset?: {clip: string; frames: number; label?: string}};
   outro: {dur: number; title: string};
 };
 
@@ -244,6 +244,14 @@ const Plan: React.FC<{c: ElbowContent['plan']}> = ({c}) => {
         })}
         <div style={{fontSize: 42, fontWeight: 600, color: '#BDB8AF', marginTop: 60, opacity: pop(f, fps, 10 + c.lines.length * 9 + 6)}}>{c.note}</div>
       </div>
+      {c.inset && (
+        <div style={{position: 'absolute', right: 60, top: 500, width: 320, opacity: pop(f, fps, 14), transform: `scale(${0.85 + 0.15 * pop(f, fps, 14)})`}}>
+          <div style={{width: 320, height: 320, borderRadius: 26, overflow: 'hidden', border: `5px solid ${C.accent}`, boxShadow: '0 16px 40px rgba(0,0,0,.6)'}}>
+            <Loop durationInFrames={c.inset.frames} layout="none"><OffthreadVideo src={staticFile(c.inset.clip)} muted style={{width: 310, height: 310, display: 'block'}} /></Loop>
+          </div>
+          {c.inset.label && <div style={{marginTop: 12, fontSize: 34, fontWeight: 800, color: '#D6D2CA', textAlign: 'center'}}>{c.inset.label}</div>}
+        </div>
+      )}
     </AbsoluteFill>
   );
 };
