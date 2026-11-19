@@ -38,6 +38,7 @@ No new TikTok posts since 6 Nov. Numbers barely moved.
 
 ## 2. What we've learned so far
 
+- **Hypothesis (Pieterjan, 19 Nov): regular reels beat trial reels.** B2 (121k) and Elbow (14.9k) were regular; PPS B/C were trials. Hard to prove: good trials get converted to regular, so the comparison is biased. Mechanism is plausible (regular = followers give the first engagement signal). Working rule: proven formats → regular; trials only for real A/B tests (e.g. two hooks), then post the winner as regular.
 - **Gear choice is not a hook (Train at Home ep. 1, 30% view rate).** "Which setup do you prefer?" is a buyer's question that almost no scroller has right now. First frame = calm hang in the shop + 4 lines of text + a question before anything happened. Compare the elbow reel: same channel, problem the viewer feels in their body → 67%. Rules: (1) one idea per reel, (2) first frame = something happening or a felt problem, max ~8 words on screen, (3) products are the tool inside a protocol, never the topic, (4) don't polish a concept for hours before the first 3 s are proven: test the hook first.
 
 - **Hook rate tells the story.** All PPS reels hold 69–72% past 3 s; Entralpi 56%, rankings 46–55%. Start with a recognisable action + a goal.
