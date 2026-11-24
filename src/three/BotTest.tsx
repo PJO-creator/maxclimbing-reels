@@ -34,11 +34,14 @@ export const useBot = (file: string) => {
 };
 // frame: 0 upright side, 1 hunched side, 2 hunched 3/4 front, 3 hunched back, 4 upright back
 const VIEWS: [number, number, number][] = [[330, 125, 0], [330, 125, 0], [240, 130, 240], [0, 135, -330], [0, 135, -330]];
-export const BotTest: React.FC<{file: string; override?: Partial<import('./Mannequin').Pose>}> = ({file, override}) => {
+export const BotTest: React.FC<{file: string; override?: Partial<import('./Mannequin').Pose>; glow?: Record<string, number>}> = ({file, override, glow}) => {
   const f = useCurrentFrame();
   const {width, height} = useVideoConfig();
   const rig = useBot(file);
-  if (rig) rig.apply({...([0, 4].includes(f) ? POSES.upright : POSES.hunched), ...(override ?? {})});
+  if (rig) {
+    rig.apply({...([0, 4].includes(f) ? POSES.upright : POSES.hunched), ...(override ?? {})});
+    rig.setMuscles(glow ?? {}, {biceps: '#FFB020', triceps: '#E8261F'});
+  }
   return (
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 42%, #4a4844 0%, #262523 45%, #0F0F0E 100%)'}}>
       {rig && (

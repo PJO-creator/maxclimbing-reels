@@ -70,7 +70,7 @@ export const ShoulderShort: React.FC = () => {
   const pout = fade(f, 128, 145, 400, 401);
   if (rig) {
     rig.apply(pose);
-    rig.setMuscles([pin, pin, pout, pout]);
+    rig.setMuscles({pecs: pin, lats: pin, traps: pout, cuff: pout}, {pecs: '#FFB020', lats: '#FFB020', traps: '#E0201B', cuff: '#E0201B'});
   }
   const cam = camAt(KEYS, f);
 

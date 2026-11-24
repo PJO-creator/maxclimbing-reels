@@ -16,10 +16,13 @@ const short = (name: string) => name.replace(/^mixamorig\d*:?/, '');
 
 type Joint = {bone: THREE.Bone; q0: THREE.Quaternion; w0: THREE.Quaternion};
 
+export const MUSCLES = ['pecs', 'lats', 'traps', 'cuff', 'neckBack', 'neckFront', 'biceps', 'triceps', 'flexors', 'extensors'] as const;
+export type MuscleName = (typeof MUSCLES)[number];
+
 export type BotRig = {
   root: THREE.Object3D;
-  /** 0 pecs, 1 lats, 2 traps, 3 rotator cuff */
-  setMuscles: (amt: [number, number, number, number]) => void;
+  /** glow amount (0–1) and colour per muscle */
+  setMuscles: (amt: Partial<Record<MuscleName, number>>, color?: Partial<Record<MuscleName, string>>) => void;
   apply: (p: Pose) => void;
   anchor: (name: string) => THREE.Vector3;
   materials: THREE.MeshStandardMaterial[];
@@ -41,52 +44,79 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     return v;
   };
   const shL = findBone('LeftArm'), sp2 = findBone('Spine2');
-  const cx = Math.abs(shL.x), sy = shL.y, zc = sp2.z;
-  type Region = {c: [number, number, number]; r: [number, number, number]; zMin?: number; zMax?: number; taper?: [number, number]};
-  const REGIONS: Region[][] = [
-    // 0 pecs (front)
-    [{c: [0.55 * cx, sy - 10, zc + 9], r: [9, 7.5, 9], zMin: zc + 3}],
-    // 1 lats (side/back)
-    [{c: [0.85 * cx, sy - 22, zc - 3], r: [6.5, 14, 9], zMax: zc + 4}],
-    // 2 middle + lower traps: a kite on the spine, wide between the shoulder blades, tapering down
-    [{c: [0, sy - 14, zc - 9], r: [12, 17, 8], zMax: zc - 2, taper: [sy - 2, 34]}],
-    // 3 rotator cuff (infraspinatus, on the shoulder blade)
-    [{c: [0.66 * cx, sy - 10, zc - 8], r: [5, 6, 6], zMax: zc - 2}],
-  ];
+  const elL = findBone('LeftForeArm'), wrL = findBone('LeftHand'), tipL = findBone('LeftHandMiddle3');
+  const nk = findBone('Neck'), hd = findBone('Head');
+  const cx = Math.abs(shL.x), sy = shL.y, sz = shL.z, zc = sp2.z;
+  const ex = Math.abs(elL.x), wx = Math.abs(wrL.x), fx = Math.abs(tipL.x) + 2;
+
   const sstep = (a: number, b: number, x: number) => {
     const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
     return t * t * (3 - 2 * t);
   };
+  type V = [number, number, number];
+  /** soft ellipsoid (x mirrored), optional z-range and downward taper */
+  const ell = (c: V, r: V, o: {zMin?: number; zMax?: number; taper?: [number, number]} = {}) => (p: THREE.Vector3) => {
+    if (o.zMin !== undefined && p.z < o.zMin) return 0;
+    if (o.zMax !== undefined && p.z > o.zMax) return 0;
+    const rx = o.taper ? r[0] * Math.min(1, Math.max(0.2, 1 - (o.taper[0] - p.y) / o.taper[1])) : r[0];
+    const dx = (Math.abs(p.x) - c[0]) / rx, dy = (p.y - c[1]) / r[1], dz = (p.z - c[2]) / r[2];
+    return 1 - sstep(0.5, 1.0, Math.sqrt(dx * dx + dy * dy + dz * dz));
+  };
+  /** soft capsule around segment a→b (x mirrored), only on the side where (p - axis point)·n > 0 */
+  const seg = (a: V, b: V, r: number, n?: V) => {
+    const A = new THREE.Vector3(...a), Bv = new THREE.Vector3(...b), AB = Bv.clone().sub(A), L2 = AB.lengthSq();
+    const q = new THREE.Vector3(), c = new THREE.Vector3();
+    return (p: THREE.Vector3) => {
+      q.set(Math.abs(p.x), p.y, p.z);
+      const t = Math.min(1, Math.max(0, q.clone().sub(A).dot(AB) / L2));
+      c.copy(A).addScaledVector(AB, t);
+      const off = q.clone().sub(c);
+      let m = 1 - sstep(0.55, 1.0, off.length() / r);
+      if (n) m *= sstep(-0.5, 1.5, off.x * n[0] + off.y * n[1] + off.z * n[2]);
+      return m;
+    };
+  };
+  // Bind pose = T-pose: arms along ±X, palms down (flexors face -Y), elbow crease faces +Z.
+  const REGIONS: Record<MuscleName, ((p: THREE.Vector3) => number)[]> = {
+    pecs: [ell([0.55 * cx, sy - 10, zc + 9], [9, 7.5, 9], {zMin: zc + 3})],
+    lats: [ell([0.85 * cx, sy - 22, zc - 3], [6.5, 14, 9], {zMax: zc + 4})],
+    traps: [ell([0, sy - 14, zc - 9], [12, 17, 8], {zMax: zc - 2, taper: [sy - 2, 34]})],
+    cuff: [ell([0.66 * cx, sy - 10, zc - 8], [5, 6, 6], {zMax: zc - 2})],
+    neckBack: [seg([0, nk.y - 3, nk.z], [0, hd.y + 4, hd.z], 7.5, [0, 0, -1]), seg([0, nk.y + 1, nk.z - 3], [0.8 * cx, sy + 4, sz - 2], 5.5, [0, 1, -0.6])],
+    neckFront: [seg([0, nk.y - 3, nk.z], [0, hd.y - 1, hd.z], 7, [0, 0, 1])],
+    biceps: [seg([cx + 4, sy, sz], [ex - 3, sy, sz], 6.5, [0, 0, 1])],
+    triceps: [seg([cx + 4, sy, sz], [ex - 2, sy, sz], 6.5, [0, 0, -1])],
+    flexors: [seg([ex + 2, sy, sz], [fx, sy, sz], 6, [0, -1, 0])],
+    extensors: [seg([ex + 2, sy, sz], [fx, sy, sz], 6, [0, 1, 0])],
+  };
+  void wx;
   const maskAt = (p: THREE.Vector3, k: number) => {
-    let m = 0;
-    for (const rg of REGIONS[k]) {
-      if (rg.zMin !== undefined && p.z < rg.zMin) continue;
-      if (rg.zMax !== undefined && p.z > rg.zMax) continue;
-      const rx = rg.taper ? rg.r[0] * Math.min(1, Math.max(0.2, 1 - (rg.taper[0] - p.y) / rg.taper[1])) : rg.r[0];
-      const dx = (Math.abs(p.x) - rg.c[0]) / rx, dy = (p.y - rg.c[1]) / rg.r[1], dz = (p.z - rg.c[2]) / rg.r[2];
-      m = Math.max(m, 1 - sstep(0.5, 1.0, Math.sqrt(dx * dx + dy * dy + dz * dz)));
-    }
-    return m;
+    const fns = REGIONS[MUSCLES[k]];
+    return fns ? Math.max(0, ...fns.map((fn) => fn(p))) : 0;
   };
 
   const uniforms = {
-    uMCol: {value: [new THREE.Color('#FFB020'), new THREE.Color('#FFB020'), new THREE.Color('#E0201B'), new THREE.Color('#E0201B')]},
-    uMAmt: {value: [0, 0, 0, 0]},
+    uMCol: {value: MUSCLES.map(() => new THREE.Color('#FFB020')).concat([new THREE.Color(), new THREE.Color()])},
+    uMAmt: {value: new Array(12).fill(0) as number[]},
   };
   const withGlow = (mat: THREE.MeshStandardMaterial) => {
     mat.onBeforeCompile = (sh) => {
       sh.uniforms.uMCol = uniforms.uMCol;
       sh.uniforms.uMAmt = uniforms.uMAmt;
       sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', '#include <common>\nattribute vec4 muscle;\nvarying vec4 vMuscle;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMuscle = muscle;');
+        .replace('#include <common>', '#include <common>\nattribute vec4 muscleA;\nattribute vec4 muscleB;\nattribute vec4 muscleC;\nvarying vec4 vMA;\nvarying vec4 vMB;\nvarying vec4 vMC;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMA = muscleA; vMB = muscleB; vMC = muscleC;');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying vec4 vMuscle;\nuniform vec3 uMCol[4];\nuniform float uMAmt[4];')
+        .replace('#include <common>', '#include <common>\nvarying vec4 vMA;\nvarying vec4 vMB;\nvarying vec4 vMC;\nuniform vec3 uMCol[12];\nuniform float uMAmt[12];')
         .replace(
           '#include <emissivemap_fragment>',
           `#include <emissivemap_fragment>
            vec3 gc = vec3(0.0); float gs = 0.0;
-           for (int i = 0; i < 4; i++) { float g = vMuscle[i] * uMAmt[i]; gc += uMCol[i] * g; gs += g; }
+           for (int i = 0; i < 4; i++) {
+             float g0 = vMA[i] * uMAmt[i]; gc += uMCol[i] * g0; gs += g0;
+             float g1 = vMB[i] * uMAmt[i + 4]; gc += uMCol[i + 4] * g1; gs += g1;
+             float g2 = vMC[i] * uMAmt[i + 8]; gc += uMCol[i + 8] * g2; gs += g2;
+           }
            gs = clamp(gs, 0.0, 1.0);
            diffuseColor.rgb = mix(diffuseColor.rgb, gc / max(gs, 1e-4), gs * 0.75);
            totalEmissiveRadiance += gc * 0.55;`,
@@ -103,13 +133,13 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     const isJoint = /Joints/.test(m.name);
     // per-vertex muscle masks from the bind pose
     const pos = m.geometry.attributes.position;
-    const arr = new Float32Array(pos.count * 4);
+    const arrs = [0, 1, 2].map(() => new Float32Array(pos.count * 4));
     const v = new THREE.Vector3();
     for (let i = 0; i < pos.count; i++) {
       v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
-      for (let k = 0; k < 4; k++) arr[i * 4 + k] = maskAt(v, k);
+      for (let k = 0; k < 12; k++) arrs[k >> 2][i * 4 + (k & 3)] = isJoint ? 0 : maskAt(v, k);
     }
-    m.geometry.setAttribute('muscle', new THREE.BufferAttribute(arr, 4));
+    ['muscleA', 'muscleB', 'muscleC'].forEach((n, j) => m.geometry.setAttribute(n, new THREE.BufferAttribute(arrs[j], 4)));
     const mat = withGlow(
       new THREE.MeshStandardMaterial({
         color: isJoint ? look?.joints ?? '#9c968c' : look?.color ?? '#d9d3c9',
@@ -201,6 +231,8 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
 
   const ANCHORS: Record<string, [string, THREE.Vector3]> = {
     head: ['Head', new THREE.Vector3(0, 10, 9)],
+    neck: ['Neck', new THREE.Vector3()],
+    hand1: ['LeftHandMiddle1', new THREE.Vector3()],
     shoulder1: ['LeftArm', new THREE.Vector3()],
     elbow1: ['LeftForeArm', new THREE.Vector3()],
     wrist1: ['LeftHand', new THREE.Vector3()],
@@ -214,8 +246,11 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     return v;
   };
 
-  const setMuscles = (amt: [number, number, number, number]) => {
-    uniforms.uMAmt.value = amt;
+  const setMuscles = (amt: Partial<Record<MuscleName, number>>, color?: Partial<Record<MuscleName, string>>) => {
+    MUSCLES.forEach((n, i) => {
+      uniforms.uMAmt.value[i] = amt[n] ?? 0;
+      if (color?.[n]) uniforms.uMCol.value[i].set(color[n]!);
+    });
   };
   return {root, apply, anchor, materials, setMuscles};
 };
