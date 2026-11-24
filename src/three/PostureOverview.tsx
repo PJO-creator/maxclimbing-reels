@@ -13,7 +13,7 @@ import {useBot} from './BotTest';
 /**
  * Climber posture, ep. 1 (overview): per body part
  *   pulled IN by (orange)  →  pulled OUT by (red)  →  that part straightens.
- * Order: head, shoulders, elbows, wrists & hands. Each part gets its own episode later.
+ * Order: upper back, arm rotation, elbows, wrists & hands. Each part gets its own episode later.
  */
 
 const FOV = 30;
@@ -36,19 +36,21 @@ type Part = {
 
 const PARTS: Part[] = [
   {
-    title: 'Head',
-    keys: ['neckFlex', 'headExt'],
-    pullIn: {muscles: ['neckBack'], names: 'Upper traps & neck extensors'},
-    pullOut: {muscles: ['neckFront'], names: 'Deep neck flexors'},
-    cam: {pos: [175, 150, 60], at: [0, 146, 8]},
+    title: 'Upper back',
+    // the head comes along with the upper back (no separate neck claim)
+    keys: ['thoracicFlex', 'lumbarFlex', 'protract', 'elevate', 'armFlex', 'kneeFlex', 'neckFlex', 'headExt'],
+    pullIn: {muscles: ['pecs'], names: 'Chest'},
+    pullOut: {muscles: ['traps'], names: 'Mid & lower traps'},
+    cam: {pos: [110, 136, 290], at: [0, 128, 0]},
+    camOut: {pos: [175, 140, -230], at: [0, 130, 0]},
   },
   {
-    title: 'Shoulders',
-    keys: ['protract', 'elevate', 'armFlex', 'armAbd', 'intRot', 'thoracicFlex', 'lumbarFlex', 'kneeFlex'],
+    title: 'Arms rotated in',
+    keys: ['intRot', 'armAbd'],
     pullIn: {muscles: ['pecs', 'lats'], names: 'Chest & lats'},
-    pullOut: {muscles: ['traps', 'cuff'], names: 'Mid & lower traps, rotator cuff'},
-    cam: {pos: [200, 138, 215], at: [0, 128, 0]},
-    camOut: {pos: [175, 140, -230], at: [0, 130, 0]},
+    pullOut: {muscles: ['cuff'], names: 'Rotator cuff'},
+    cam: {pos: [190, 132, 225], at: [0, 126, 0]},
+    camOut: {pos: [200, 136, -215], at: [0, 128, 0]},
   },
   {
     title: 'Elbows',
@@ -63,8 +65,8 @@ const PARTS: Part[] = [
     keys: ['wristFlex', 'fist', 'pronation'],
     pullIn: {muscles: ['flexors'], names: 'Finger & wrist flexors'},
     pullOut: {muscles: ['extensors'], names: 'Finger & wrist extensors'},
-    cam: {pos: [175, 108, -110], at: [14, 102, 6]},
-    camOut: {pos: [160, 110, 135], at: [14, 102, 8]},
+    cam: {pos: [235, 118, -190], at: [10, 110, 6]},
+    camOut: {pos: [230, 120, 205], at: [10, 110, 8]},
   },
 ];
 
@@ -190,7 +192,7 @@ export const PostureOverview: React.FC = () => {
         </Text>
         <Text o={fade(f, 4, 12, HOOK - 14, HOOK)} top={225} size={112}>recognize this?</Text>
         <Text o={fade(f, 30, 42, HOOK - 14, HOOK)} top={1520} size={56} weight={700}>
-          Head forward · shoulders in<br />arms bent · fists
+          Rounded back · arms rotated in<br />elbows bent · fists
         </Text>
 
         {/* per part */}
