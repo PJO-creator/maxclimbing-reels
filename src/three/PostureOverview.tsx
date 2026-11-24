@@ -152,13 +152,14 @@ export const PostureOverview: React.FC = () => {
     const s = segStart(i);
     const a = fade(f, s + T.inOn, s + T.inOn + 12, s + T.inOff, s + T.inOff + 12);
     const b = fade(f, s + T.outOn, s + T.outOn + 12, s + SEG - 10, s + SEG + 4);
+    // a muscle can appear in several parts: keep the strongest glow
     p.pullIn.muscles.forEach((m) => {
-      amt[m] = a;
-      col[m] = IN;
+      if (a >= (amt[m] ?? 0)) col[m] = IN;
+      amt[m] = Math.max(amt[m] ?? 0, a);
     });
     p.pullOut.muscles.forEach((m) => {
-      amt[m] = b;
-      col[m] = OUT;
+      if (b >= (amt[m] ?? 0)) col[m] = OUT;
+      amt[m] = Math.max(amt[m] ?? 0, b);
     });
   });
   if (rig) {
