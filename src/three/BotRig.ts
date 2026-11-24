@@ -81,7 +81,8 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     pecs: [ell([0.55 * cx, sy - 10, zc + 9], [9, 7.5, 9], {zMin: zc + 3})],
     lats: [ell([0.85 * cx, sy - 22, zc - 3], [6.5, 14, 9], {zMax: zc + 4})],
     traps: [ell([0, sy - 14, zc - 9], [12, 17, 8], {zMax: zc - 2, taper: [sy - 2, 34]})],
-    cuff: [ell([0.66 * cx, sy - 10, zc - 8], [5, 6, 6], {zMax: zc - 2})],
+    // rotator cuff on the shoulder blade: infraspinatus (below the spine of the scapula) + supraspinatus (above it)
+    cuff: [ell([0.62 * cx, sy - 4, zc - 8], [6.5, 7.5, 6.5], {zMax: zc - 2}), ell([0.55 * cx, sy + 3, zc - 6], [6, 3, 6], {zMax: zc})],
     neckBack: [seg([0, nk.y - 3, nk.z], [0, hd.y + 4, hd.z], 7.5, [0, 0, -1]), seg([0, nk.y + 1, nk.z - 3], [0.8 * cx, sy + 4, sz - 2], 5.5, [0, 1, -0.6])],
     neckFront: [seg([0, nk.y - 3, nk.z], [0, hd.y - 1, hd.z], 7, [0, 0, 1])],
     biceps: [seg([cx + 4, sy, sz], [ex - 3, sy, sz], 6.5, [0, 0, 1])],
