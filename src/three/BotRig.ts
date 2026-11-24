@@ -18,6 +18,8 @@ type Joint = {bone: THREE.Bone; q0: THREE.Quaternion; w0: THREE.Quaternion};
 
 export type BotRig = {
   root: THREE.Object3D;
+  /** 0 pecs, 1 lats, 2 traps, 3 rotator cuff */
+  setMuscles: (amt: [number, number, number, number]) => void;
   apply: (p: Pose) => void;
   anchor: (name: string) => THREE.Vector3;
   materials: THREE.MeshStandardMaterial[];
@@ -26,16 +28,97 @@ export type BotRig = {
 export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: string}): BotRig => {
   const root = new FBXLoader().parse(buf, '');
   const materials: THREE.MeshStandardMaterial[] = [];
+  root.updateMatrixWorld(true);
+
+  // ---- landmarks in the bind (T-)pose, for the muscle regions ----
+  const findBone = (n: string) => {
+    let hit: THREE.Object3D | undefined;
+    root.traverse((o) => {
+      if (!hit && (o as THREE.Bone).isBone && short(o.name) === n) hit = o;
+    });
+    const v = new THREE.Vector3();
+    hit?.getWorldPosition(v);
+    return v;
+  };
+  const shL = findBone('LeftArm'), sp2 = findBone('Spine2');
+  const cx = Math.abs(shL.x), sy = shL.y, zc = sp2.z;
+  type Region = {c: [number, number, number]; r: [number, number, number]; zMin?: number; zMax?: number; taper?: [number, number]};
+  const REGIONS: Region[][] = [
+    // 0 pecs (front)
+    [{c: [0.55 * cx, sy - 10, zc + 9], r: [9, 7.5, 9], zMin: zc + 3}],
+    // 1 lats (side/back)
+    [{c: [0.85 * cx, sy - 22, zc - 3], r: [6.5, 14, 9], zMax: zc + 4}],
+    // 2 middle + lower traps: a kite on the spine, wide between the shoulder blades, tapering down
+    [{c: [0, sy - 14, zc - 9], r: [12, 17, 8], zMax: zc - 2, taper: [sy - 2, 34]}],
+    // 3 rotator cuff (infraspinatus, on the shoulder blade)
+    [{c: [0.66 * cx, sy - 10, zc - 8], r: [5, 6, 6], zMax: zc - 2}],
+  ];
+  const sstep = (a: number, b: number, x: number) => {
+    const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
+  };
+  const maskAt = (p: THREE.Vector3, k: number) => {
+    let m = 0;
+    for (const rg of REGIONS[k]) {
+      if (rg.zMin !== undefined && p.z < rg.zMin) continue;
+      if (rg.zMax !== undefined && p.z > rg.zMax) continue;
+      const rx = rg.taper ? rg.r[0] * Math.min(1, Math.max(0.2, 1 - (rg.taper[0] - p.y) / rg.taper[1])) : rg.r[0];
+      const dx = (Math.abs(p.x) - rg.c[0]) / rx, dy = (p.y - rg.c[1]) / rg.r[1], dz = (p.z - rg.c[2]) / rg.r[2];
+      m = Math.max(m, 1 - sstep(0.5, 1.0, Math.sqrt(dx * dx + dy * dy + dz * dz)));
+    }
+    return m;
+  };
+
+  const uniforms = {
+    uMCol: {value: [new THREE.Color('#FFB020'), new THREE.Color('#FFB020'), new THREE.Color('#E0201B'), new THREE.Color('#E0201B')]},
+    uMAmt: {value: [0, 0, 0, 0]},
+  };
+  const withGlow = (mat: THREE.MeshStandardMaterial) => {
+    mat.onBeforeCompile = (sh) => {
+      sh.uniforms.uMCol = uniforms.uMCol;
+      sh.uniforms.uMAmt = uniforms.uMAmt;
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\nattribute vec4 muscle;\nvarying vec4 vMuscle;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMuscle = muscle;');
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <common>', '#include <common>\nvarying vec4 vMuscle;\nuniform vec3 uMCol[4];\nuniform float uMAmt[4];')
+        .replace(
+          '#include <emissivemap_fragment>',
+          `#include <emissivemap_fragment>
+           vec3 gc = vec3(0.0); float gs = 0.0;
+           for (int i = 0; i < 4; i++) { float g = vMuscle[i] * uMAmt[i]; gc += uMCol[i] * g; gs += g; }
+           gs = clamp(gs, 0.0, 1.0);
+           diffuseColor.rgb = mix(diffuseColor.rgb, gc / max(gs, 1e-4), gs * 0.75);
+           totalEmissiveRadiance += gc * 0.55;`,
+        );
+    };
+    return mat;
+  };
+
   root.traverse((o) => {
     const m = o as THREE.SkinnedMesh;
     if (!m.isSkinnedMesh) return;
-    const orig = ([] as THREE.Material[]).concat(m.material);
     m.frustumCulled = false;
-    if (orig.some((x) => (x as THREE.MeshPhongMaterial).map)) return; // textured character: keep its look
+    const orig = ([] as THREE.Material[]).concat(m.material) as THREE.MeshPhongMaterial[];
     const isJoint = /Joints/.test(m.name);
-    const mat = new THREE.MeshStandardMaterial({color: isJoint ? look?.joints ?? '#9c968c' : look?.color ?? '#d8d2c8', roughness: isJoint ? 0.45 : 0.6, metalness: 0});
+    // per-vertex muscle masks from the bind pose
+    const pos = m.geometry.attributes.position;
+    const arr = new Float32Array(pos.count * 4);
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+      for (let k = 0; k < 4; k++) arr[i * 4 + k] = maskAt(v, k);
+    }
+    m.geometry.setAttribute('muscle', new THREE.BufferAttribute(arr, 4));
+    const mat = withGlow(
+      new THREE.MeshStandardMaterial({
+        color: isJoint ? look?.joints ?? '#9c968c' : look?.color ?? '#d9d3c9',
+        roughness: isJoint ? 0.45 : 0.58,
+        metalness: 0,
+        normalMap: orig[0]?.normalMap ?? null,
+      }),
+    );
     m.material = mat;
-    m.frustumCulled = false;
     materials.push(mat);
   });
 
@@ -131,5 +214,8 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     return v;
   };
 
-  return {root, apply, anchor, materials};
+  const setMuscles = (amt: [number, number, number, number]) => {
+    uniforms.uMAmt.value = amt;
+  };
+  return {root, apply, anchor, materials, setMuscles};
 };
