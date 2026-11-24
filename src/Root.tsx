@@ -74,7 +74,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="bot-test-y" component={BotTest} durationInFrames={5} fps={30} width={1080} height={1920} defaultProps={{file: 'models/Y_Bot.fbx'}} />
     <Composition id="shoulder-short" component={ShoulderShort} durationInFrames={SHOULDER_SHORT_DURATION} fps={30} width={1080} height={1920} />
     {/* Climber posture ep. 1: overview per body part (Mixamo Mannequin) */}
-    <Composition id="posture-overview" component={PostureOverview} durationInFrames={POSTURE_OVERVIEW_DURATION} fps={30} width={1080} height={1920} />
+    <Composition id="posture-overview" component={PostureOverview} durationInFrames={POSTURE_OVERVIEW_DURATION} fps={30} width={1080} height={1920} defaultProps={{collapse: false}} />
+    <Composition id="posture-overview-b" component={PostureOverview} durationInFrames={POSTURE_OVERVIEW_DURATION} fps={30} width={1080} height={1920} defaultProps={{collapse: true}} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}

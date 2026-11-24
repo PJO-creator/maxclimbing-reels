@@ -162,7 +162,8 @@ const Text: React.FC<{o: number; top: number; size: number; children: React.Reac
     </div>
   );
 
-export const PostureOverview: React.FC = () => {
+/** collapse: variant B — the figure starts upright and slumps into the hunch in the first second */
+export const PostureOverview: React.FC<{collapse?: boolean}> = ({collapse = false}) => {
   const f = useCurrentFrame();
   const {width, height} = useVideoConfig();
   const rig = useBot('models/Mannequin.fbx');
@@ -174,7 +175,7 @@ export const PostureOverview: React.FC = () => {
     const v = ramp(f, s + T.straighten[0], s + T.straighten[1]);
     p.keys.forEach((k) => (t[k] = Math.max(t[k] ?? 0, v)));
   });
-  const pose = lerpPose(HUNCH, UP, t);
+  const pose = collapse && f < 40 ? lerpPose(UP, HUNCH, Easing.in(Easing.quad)(Math.min(1, Math.max(0, (f - 3) / 27)))) : lerpPose(HUNCH, UP, t);
 
   // muscles
   const amt: Partial<Record<MuscleName, number>> = {};
@@ -219,10 +220,10 @@ export const PostureOverview: React.FC = () => {
       )}
       <AbsoluteFill style={{fontFamily: FONT, color: C.ink}}>
         {/* hook */}
-        <Text o={fade(f, 0, 6, HOOK - 14, HOOK)} top={150} size={64} weight={700}>
+        <Text o={collapse ? fade(f, -1, 0, HOOK - 14, HOOK) : fade(f, 0, 6, HOOK - 14, HOOK)} top={150} size={64} weight={700}>
           <span style={{color: '#B9B5AD'}}>Climbers,</span>
         </Text>
-        <Text o={fade(f, 4, 12, HOOK - 14, HOOK)} top={225} size={112}>recognize this?</Text>
+        <Text o={collapse ? fade(f, -1, 0, HOOK - 14, HOOK) : fade(f, 4, 12, HOOK - 14, HOOK)} top={225} size={112}>recognize this?</Text>
         <Text o={fade(f, 60, 72, HOOK - 10, HOOK)} top={1500} size={60}>
           4 things pull you
           <br />
