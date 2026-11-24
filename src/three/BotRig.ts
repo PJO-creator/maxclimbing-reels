@@ -11,7 +11,8 @@ import type {Pose} from './Mannequin';
  */
 
 const D = THREE.MathUtils.degToRad;
-const B = (n: string) => `mixamorig${n}`;
+/** bone names vary per download: mixamorigLeftArm, mixamorig1:LeftArm, mixamorig9LeftArm… */
+const short = (name: string) => name.replace(/^mixamorig\d*:?/, '');
 
 type Joint = {bone: THREE.Bone; q0: THREE.Quaternion; w0: THREE.Quaternion};
 
@@ -28,6 +29,9 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
   root.traverse((o) => {
     const m = o as THREE.SkinnedMesh;
     if (!m.isSkinnedMesh) return;
+    const orig = ([] as THREE.Material[]).concat(m.material);
+    m.frustumCulled = false;
+    if (orig.some((x) => (x as THREE.MeshPhongMaterial).map)) return; // textured character: keep its look
     const isJoint = /Joints/.test(m.name);
     const mat = new THREE.MeshStandardMaterial({color: isJoint ? look?.joints ?? '#9c968c' : look?.color ?? '#d8d2c8', roughness: isJoint ? 0.45 : 0.6, metalness: 0});
     m.material = mat;
@@ -43,12 +47,13 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     if (m.isSkinnedMesh) skeletons.push(m.skeleton.bones);
   });
   const rigs = skeletons.map((bones) => {
-    const by = new Map(bones.map((b) => [b.name, b]));
-    const bone = (n: string) => by.get(B(n))!;
+    const by = new Map(bones.map((b) => [short(b.name), b]));
+    const bone = (n: string) => by.get(n)!;
     const joints: Record<string, Joint> = {};
 
     // rotate a bone about a world axis (keeps children attached)
-    const rotWorld = (b: THREE.Bone, axis: THREE.Vector3, deg: number) => {
+    const rotWorld = (b: THREE.Bone | undefined, axis: THREE.Vector3, deg: number) => {
+      if (!b) return;
       root.updateMatrixWorld(true);
       const pw = new THREE.Quaternion();
       b.parent!.getWorldQuaternion(pw);
@@ -61,11 +66,11 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     bones.forEach((b) => {
       const w0 = new THREE.Quaternion();
       b.getWorldQuaternion(w0);
-      joints[b.name] = {bone: b, q0: b.quaternion.clone(), w0};
+      joints[short(b.name)] = {bone: b, q0: b.quaternion.clone(), w0};
     });
     return {bone, joints};
   });
-  const bone = rigs[0].bone;
+  const bone = (rigs.find((r) => r.bone('LeftArm')) ?? rigs[0]).bone;
 
   const axisCache = new Map<string, THREE.Vector3>();
   /** world axis of the neutral pose → this bone's local axis */
@@ -80,7 +85,7 @@ export const loadBot = (buf: ArrayBuffer, look?: {color?: string; joints?: strin
     for (const {joints} of rigs) {
       Object.values(joints).forEach((j) => j.bone.quaternion.copy(j.q0));
       const rot = (n: string, axis: THREE.Vector3, deg: number) => {
-        const j = joints[B(n)];
+        const j = joints[n];
         if (!j || !deg) return;
         j.bone.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(localAxis(j, axis), D(deg)));
       };
