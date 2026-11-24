@@ -15,7 +15,8 @@ const FOV = 30;
 export const SHOULDER_SHORT_DURATION = 255;
 
 // hunched pose tuned for the Mixamo Mannequin
-const HUNCH: Pose = {...POSES.hunched, lumbarFlex: -6, thoracicFlex: 24, neckFlex: 20, headExt: 40};
+// exaggerated on purpose: the message has to land in one glance
+const HUNCH: Pose = {...POSES.hunched, lumbarFlex: -9, thoracicFlex: 34, neckFlex: 30, headExt: 64, protract: 26, elevate: 8, armFlex: 26, intRot: 42, elbowFlex: 62, pronation: 85, wristFlex: 55, fist: 1};
 // only the shoulder parameters straighten in this segment
 const SHOULDER_KEYS: (keyof Pose)[] = ['protract', 'elevate', 'armFlex', 'armAbd', 'intRot', 'thoracicFlex', 'lumbarFlex'];
 
