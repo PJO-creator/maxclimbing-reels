@@ -5,6 +5,7 @@ import {PPSLearn, learnTimeline, LearnContent} from './PPSLearn';
 import {PPS3DTest, FLY_DURATION} from './three/PPS3DTest';
 import {PPS3DLearn, LEARN3D_DURATION, Learn3DContent} from './three/PPS3DLearn';
 import {PostureHook, POSTURE_HOOK_DURATION} from './three/PostureHook';
+import {BotTest} from './three/BotTest';
 import {EntralpiLearn, entralpiTimeline, EntralpiContent} from './EntralpiLearn';
 import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
@@ -67,6 +68,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="pps-pinch" component={PPSLearn} durationInFrames={learnTimeline(ppsPinch as LearnContent).total} fps={30} width={1080} height={1920} defaultProps={{content: ppsPinch as LearnContent}} />
     {/* Antagonists ep. 3: 3D mannequin posture hook */}
     <Composition id="posture-hook" component={PostureHook} durationInFrames={POSTURE_HOOK_DURATION} fps={30} width={1080} height={1920} />
+    <Composition id="bot-test-x" component={BotTest} durationInFrames={5} fps={30} width={1080} height={1920} defaultProps={{file: 'models/X_Bot.fbx'}} />
+    <Composition id="bot-test-y" component={BotTest} durationInFrames={5} fps={30} width={1080} height={1920} defaultProps={{file: 'models/Y_Bot.fbx'}} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}
