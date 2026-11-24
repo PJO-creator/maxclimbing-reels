@@ -4,6 +4,7 @@ import {PPSReel, buildTimeline} from './PPSReel';
 import {PPSLearn, learnTimeline, LearnContent} from './PPSLearn';
 import {PPS3DTest, FLY_DURATION} from './three/PPS3DTest';
 import {PPS3DLearn, LEARN3D_DURATION, Learn3DContent} from './three/PPS3DLearn';
+import {PostureHook, POSTURE_HOOK_DURATION} from './three/PostureHook';
 import {EntralpiLearn, entralpiTimeline, EntralpiContent} from './EntralpiLearn';
 import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
@@ -64,6 +65,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="pps-learn-web" component={PPSLearn} durationInFrames={learnTimeline(ppsLearnWeb as LearnContent).total} fps={30} width={1080} height={1920} defaultProps={{content: ppsLearnWeb as LearnContent}} />
     {/* B2 remake: one-arm pull-up with a pinch grip on the PPS */}
     <Composition id="pps-pinch" component={PPSLearn} durationInFrames={learnTimeline(ppsPinch as LearnContent).total} fps={30} width={1080} height={1920} defaultProps={{content: ppsPinch as LearnContent}} />
+    {/* Antagonists ep. 3: 3D mannequin posture hook */}
+    <Composition id="posture-hook" component={PostureHook} durationInFrames={POSTURE_HOOK_DURATION} fps={30} width={1080} height={1920} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}
