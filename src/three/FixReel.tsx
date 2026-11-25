@@ -22,6 +22,8 @@ const sec = (s: number) => Math.round(s * FPS);
 type Clip = {src: string; from: number; dur: number};
 export type FixContent = {
   hook: Clip & {l1: string; l2: string; l2At: number};
+  /** optional slow-motion replay of the key moment, right after the hook */
+  replay?: Clip & {rate: number; l1: string; l2: string};
   anatomy: {
     dur: number;
     pose: Partial<Pose>;
@@ -36,11 +38,12 @@ export type FixContent = {
 
 export const fixParts = (c: FixContent) => {
   const hook = sec(c.hook.dur);
+  const replay = c.replay ? sec(c.replay.dur) : 0;
   const anat = sec(c.anatomy.dur);
   const ex = c.exercises.map((e) => sec(e.dur));
   const plan = sec(c.plan.dur);
   const outro = sec(c.outro.dur);
-  return {hook, anat, ex, plan, outro, total: hook + anat + ex.reduce((a, b) => a + b, 0) + plan + outro};
+  return {hook, replay, anat, ex, plan, outro, total: hook + replay + anat + ex.reduce((a, b) => a + b, 0) + plan + outro};
 };
 
 const fade = (f: number, a: number, b: number, c: number, d: number) =>
@@ -54,8 +57,8 @@ const Box: React.FC<{o: number; top: number; children: React.ReactNode; size?: n
     </div>
   );
 
-const Video: React.FC<{clip: Clip}> = ({clip}) => (
-  <OffthreadVideo src={staticFile(clip.src)} startFrom={sec(clip.from)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+const Video: React.FC<{clip: Clip; rate?: number}> = ({clip, rate = 1}) => (
+  <OffthreadVideo src={staticFile(clip.src)} startFrom={sec(clip.from)} playbackRate={rate} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
 );
 
 const Cam: React.FC<{pos: V3; at: V3}> = ({pos, at}) => {
@@ -116,6 +119,8 @@ export const FixReel: React.FC<{content: FixContent}> = ({content: c}) => {
   let at = 0;
   const hookAt = at;
   at += p.hook;
+  const replayAt = at;
+  at += p.replay;
   const anatAt = at;
   at += p.anat;
   const exAt = p.ex.map((d) => {
@@ -144,6 +149,21 @@ export const FixReel: React.FC<{content: FixContent}> = ({content: c}) => {
           </Box>
         </AbsoluteFill>
       </Sequence>
+
+      {/* slow-motion replay of the key moment */}
+      {c.replay && (
+        <Sequence from={replayAt} durationInFrames={p.replay}>
+          <Video clip={c.replay} rate={c.replay.rate} />
+          <AbsoluteFill>
+            <div style={{position: 'absolute', right: 40, top: 160, opacity: fade(f - replayAt, 0, 6, p.replay - 6, p.replay), fontSize: 40, fontWeight: 800, color: '#0F0F0E', background: C.warn, borderRadius: 14, padding: '6px 18px'}}>SLOW-MO</div>
+            <Box o={fade(f - replayAt, 4, 14, p.replay - 6, p.replay)} top={1430} size={70}>
+              {c.replay.l1}
+              <br />
+              <span style={{color: '#B9B5AD', fontSize: 50, fontWeight: 700}}>{c.replay.l2}</span>
+            </Box>
+          </AbsoluteFill>
+        </Sequence>
+      )}
 
       {/* anatomy on the Mannequin */}
       <Sequence from={anatAt} durationInFrames={p.anat}>
