@@ -11,6 +11,8 @@ import {PostureOverview, POSTURE_OVERVIEW_DURATION} from './three/PostureOvervie
 import {PostureSeries, SERIES, seriesDuration} from './three/PostureSeries';
 import {FixReel, FixContent, fixParts} from './three/FixReel';
 import fixTriceps from '../data/fix-triceps.json';
+import fixUpperback from '../data/fix-upperback.json';
+import fixCuff from '../data/fix-cuff.json';
 import {EntralpiLearn, entralpiTimeline, EntralpiContent} from './EntralpiLearn';
 import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
@@ -83,6 +85,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="posture-wake" component={PostureSeries} durationInFrames={seriesDuration(SERIES.wake)} fps={30} width={1080} height={1920} defaultProps={{variant: 'wake' as const}} />
     <Composition id="posture-stand" component={PostureSeries} durationInFrames={seriesDuration(SERIES.stand)} fps={30} width={1080} height={1920} defaultProps={{variant: 'stand' as const}} />
     {/* Posture fixes: real footage + Mannequin anatomy + protocol */}
+    <Composition id="fix-upperback" component={FixReel} durationInFrames={fixParts(fixUpperback as unknown as FixContent).total} fps={30} width={1080} height={1920} defaultProps={{content: fixUpperback as unknown as FixContent}} />
+    <Composition id="fix-cuff" component={FixReel} durationInFrames={fixParts(fixCuff as unknown as FixContent).total} fps={30} width={1080} height={1920} defaultProps={{content: fixCuff as unknown as FixContent}} />
     <Composition id="fix-triceps" component={FixReel} durationInFrames={fixParts(fixTriceps as unknown as FixContent).total} fps={30} width={1080} height={1920} defaultProps={{content: fixTriceps as unknown as FixContent}} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />

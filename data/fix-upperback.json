@@ -1,0 +1,16 @@
+{
+  "hook": {"src": "clips/fix/yraise.mp4", "from": 12, "dur": 3.2, "l1": "Strong lats.", "l2": "Weak upper back?", "l2At": 1.1},
+  "anatomy": {
+    "dur": 5.6,
+    "pose": {"protract": 22, "thoracicFlex": 22, "elevate": 6, "intRot": 25, "neckFlex": 14, "headExt": 20},
+    "cam": {"pos": [40, 140, -270], "at": [0, 130, 0]},
+    "pullIn": {"muscles": ["lats", "pecs"], "text": "Climbing trains *chest & lats*:<br/>they pull your shoulders forward"},
+    "pullOut": {"muscles": ["traps"], "text": "*Mid & lower traps*<br/>pull them back"}
+  },
+  "exercises": [
+    {"src": "clips/fix/yraise.mp4", "from": 15, "dur": 4.8, "title": "Ring Y-raise", "cue": "Arms up in a Y.<br/>Shoulders down, not to your ears."},
+    {"src": "clips/fix/rows.mp4", "from": 9, "dur": 4.6, "title": "Ring row, elbows wide", "cue": "Squeeze the shoulder blades.<br/>Pause 1 s at the top."}
+  ],
+  "plan": {"dur": 4.6, "lines": ["2–3 × 12–15", "2–3× per week", "Light & slow"], "note": "Feet further forward = harder. Pain? See a physio."},
+  "outro": {"dur": 2.2, "title": "Save this for\nyour next session."}
+}
