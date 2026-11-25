@@ -30,9 +30,10 @@
     },
     "pullIn": {
       "muscles": [
-        "biceps"
+        "biceps",
+        "lats"
       ],
-      "text": "Climbing trains the pull:<br/>*biceps*"
+      "text": "Climbing trains the pull:<br/>*biceps & lats*"
     },
     "pullOut": {
       "muscles": [
