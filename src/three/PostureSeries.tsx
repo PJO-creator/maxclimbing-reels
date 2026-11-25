@@ -109,8 +109,8 @@ const Bed: React.FC = () => {
   );
 };
 
-const Checklist: React.FC<{f: number; parts: Part[]}> = ({f, parts}) => {
-  const o = fade(f, HOOK, HOOK + 12, 99999, 100000);
+const Checklist: React.FC<{f: number; parts: Part[]; end: number}> = ({f, parts, end}) => {
+  const o = fade(f, HOOK, HOOK + 12, end, end + 10);
   if (o <= 0) return null;
   return (
     <div style={{position: 'absolute', left: 40, top: 360, opacity: o, background: 'rgba(15,15,14,0.72)', borderRadius: 24, padding: '20px 26px', display: 'flex', flexDirection: 'column', gap: 12}}>
@@ -220,7 +220,7 @@ export const PostureSeries: React.FC<{variant: 'wake' | 'stand'}> = ({variant}) 
         <Text o={fade(f, -1, 0, HOOK - 14, HOOK)} top={215} size={88}>{cfg.hookL2}</Text>
         <Text o={fade(f, 40, 52, HOOK - 10, HOOK)} top={1500} size={60}>{cfg.hookSub}</Text>
 
-        {f >= HOOK && <Checklist f={f} parts={cfg.parts} />}
+        {f >= HOOK && <Checklist f={f} parts={cfg.parts} end={total - OUTRO} />}
 
         {part && (
           <>
@@ -237,13 +237,19 @@ export const PostureSeries: React.FC<{variant: 'wake' | 'stand'}> = ({variant}) 
           </>
         )}
 
-        <Text o={fade(f, total - OUTRO + 10, total - OUTRO + 22, 99999, 100000)} top={160} size={84}>
-          Climbing trains the pull.
+        <Text o={fade(f, total - OUTRO + 10, total - OUTRO + 22, 99999, 100000)} top={160} size={72}>
+          Climbing trains
           <br />
-          <span style={{color: '#FF4A3D'}}>Train the opposite.</span>
+          what pulls you in.
+          <br />
+          <span style={{color: '#FF4A3D'}}>Train what</span>
+          <br />
+          <span style={{color: '#FF4A3D'}}>pulls you back.</span>
         </Text>
         <Text o={fade(f, total - OUTRO + 30, total - OUTRO + 42, 99999, 100000)} top={1520} size={56} weight={700}>
-          Follow for the fix.
+          Follow: one fix per part,
+          <br />
+          <span style={{color: '#B9B5AD'}}>every week.</span>
         </Text>
       </AbsoluteFill>
     </AbsoluteFill>

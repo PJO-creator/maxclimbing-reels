@@ -117,7 +117,7 @@ const KEYS: CamKey[] = (() => {
 
 /** Persistent list of the 4 parts: current one highlighted, finished ones checked. */
 const Checklist: React.FC<{f: number}> = ({f}) => {
-  const o = fade(f, 40, 54, 99999, 100000);
+  const o = fade(f, 40, 54, POSTURE_OVERVIEW_DURATION - OUTRO, POSTURE_OVERVIEW_DURATION - OUTRO + 10);
   if (o <= 0) return null;
   return (
     <div style={{position: 'absolute', left: 40, top: 360, opacity: o, background: 'rgba(15,15,14,0.72)', borderRadius: 24, padding: '20px 26px', display: 'flex', flexDirection: 'column', gap: 12}}>
@@ -249,15 +249,19 @@ export const PostureOverview: React.FC<{collapse?: boolean}> = ({collapse = fals
         )}
 
         {/* outro */}
-        <Text o={fade(f, POSTURE_OVERVIEW_DURATION - OUTRO + 10, POSTURE_OVERVIEW_DURATION - OUTRO + 22, 9999, 10000)} top={160} size={84}>
-          Climbing trains the pull.
+        <Text o={fade(f, POSTURE_OVERVIEW_DURATION - OUTRO + 10, POSTURE_OVERVIEW_DURATION - OUTRO + 22, 9999, 10000)} top={160} size={72}>
+          Climbing trains
           <br />
-          <span style={{color: '#FF4A3D'}}>Train the opposite.</span>
+          what pulls you in.
+          <br />
+          <span style={{color: '#FF4A3D'}}>Train what</span>
+          <br />
+          <span style={{color: '#FF4A3D'}}>pulls you back.</span>
         </Text>
         <Text o={fade(f, POSTURE_OVERVIEW_DURATION - OUTRO + 30, POSTURE_OVERVIEW_DURATION - OUTRO + 42, 9999, 10000)} top={1520} size={56} weight={700}>
-          Follow for the fix
+          Follow: one fix per part,
           <br />
-          <span style={{color: '#B9B5AD'}}>for each part.</span>
+          <span style={{color: '#B9B5AD'}}>every week.</span>
         </Text>
       </AbsoluteFill>
     </AbsoluteFill>
