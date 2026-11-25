@@ -110,7 +110,7 @@ const Bed: React.FC = () => {
 };
 
 const Checklist: React.FC<{f: number; parts: Part[]}> = ({f, parts}) => {
-  const o = fade(f, 40, 54, 99999, 100000);
+  const o = fade(f, HOOK, HOOK + 12, 99999, 100000);
   if (o <= 0) return null;
   return (
     <div style={{position: 'absolute', left: 40, top: 360, opacity: o, background: 'rgba(15,15,14,0.72)', borderRadius: 24, padding: '20px 26px', display: 'flex', flexDirection: 'column', gap: 12}}>
@@ -220,7 +220,7 @@ export const PostureSeries: React.FC<{variant: 'wake' | 'stand'}> = ({variant}) 
         <Text o={fade(f, -1, 0, HOOK - 14, HOOK)} top={215} size={88}>{cfg.hookL2}</Text>
         <Text o={fade(f, 40, 52, HOOK - 10, HOOK)} top={1500} size={60}>{cfg.hookSub}</Text>
 
-        {f >= HOOK - 10 && <Checklist f={f} parts={cfg.parts} />}
+        {f >= HOOK && <Checklist f={f} parts={cfg.parts} />}
 
         {part && (
           <>
