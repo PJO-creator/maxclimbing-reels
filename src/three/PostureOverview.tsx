@@ -17,14 +17,14 @@ import {useBot} from './BotTest';
  */
 
 const FOV = 30;
-const IN = '#FFB020';
-const OUT = '#E8261F';
+export const IN = '#FFB020';
+export const OUT = '#E8261F';
 
 // exaggerated on purpose: the message has to land in one glance
-const HUNCH: Pose = {...POSES.hunched, lumbarFlex: -9, thoracicFlex: 34, neckFlex: 30, headExt: 64, protract: 26, elevate: 8, armFlex: 26, armAbd: 4, intRot: 42, elbowFlex: 62, pronation: 85, wristFlex: 55, fist: 1, kneeFlex: 4};
+export const HUNCH: Pose = {...POSES.hunched, lumbarFlex: -9, thoracicFlex: 34, neckFlex: 30, headExt: 64, protract: 26, elevate: 8, armFlex: 26, armAbd: 4, intRot: 42, elbowFlex: 62, pronation: 85, wristFlex: 55, fist: 1, kneeFlex: 4};
 const UP = POSES.upright;
 
-type Part = {
+export type Part = {
   title: string;
   keys: (keyof Pose)[];
   pullIn: {muscles: MuscleName[]; names: string};
@@ -34,7 +34,7 @@ type Part = {
   camOut?: {pos: V3; at: V3};
 };
 
-const PARTS: Part[] = [
+export const PARTS: Part[] = [
   {
     title: 'Upper back',
     // the head comes along with the upper back (no separate neck claim)
@@ -139,7 +139,7 @@ const Checklist: React.FC<{f: number}> = ({f}) => {
   );
 };
 
-const Env: React.FC = () => {
+export const Env: React.FC = () => {
   const {gl, scene} = useThree();
   useMemo(() => {
     const pm = new THREE.PMREMGenerator(gl);
@@ -155,7 +155,7 @@ const Cam: React.FC<{pos: V3; at: V3}> = ({pos, at}) => {
   return null;
 };
 
-const Text: React.FC<{o: number; top: number; size: number; children: React.ReactNode; weight?: number}> = ({o, top, size, children, weight = 800}) =>
+export const Text: React.FC<{o: number; top: number; size: number; children: React.ReactNode; weight?: number}> = ({o, top, size, children, weight = 800}) =>
   o <= 0 ? null : (
     <div style={{position: 'absolute', left: 50, right: 50, top, display: 'flex', justifyContent: 'center', opacity: o}}>
       <div style={{textAlign: 'center', fontSize: size, fontWeight: weight, letterSpacing: size > 80 ? -2.5 : -1, lineHeight: 1.08, background: 'rgba(15,15,14,0.78)', borderRadius: 26, padding: '16px 34px 20px'}}>{children}</div>

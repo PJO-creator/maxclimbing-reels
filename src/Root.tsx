@@ -8,6 +8,7 @@ import {PostureHook, POSTURE_HOOK_DURATION} from './three/PostureHook';
 import {BotTest} from './three/BotTest';
 import {ShoulderShort, SHOULDER_SHORT_DURATION} from './three/ShoulderShort';
 import {PostureOverview, POSTURE_OVERVIEW_DURATION} from './three/PostureOverview';
+import {PostureSeries, SERIES, seriesDuration} from './three/PostureSeries';
 import {EntralpiLearn, entralpiTimeline, EntralpiContent} from './EntralpiLearn';
 import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
@@ -76,6 +77,9 @@ export const RemotionRoot: React.FC = () => (
     {/* Climber posture ep. 1: overview per body part (Mixamo Mannequin) */}
     <Composition id="posture-overview" component={PostureOverview} durationInFrames={POSTURE_OVERVIEW_DURATION} fps={30} width={1080} height={1920} defaultProps={{collapse: false}} />
     <Composition id="posture-overview-b" component={PostureOverview} durationInFrames={POSTURE_OVERVIEW_DURATION} fps={30} width={1080} height={1920} defaultProps={{collapse: true}} />
+    {/* Split episodes: wake up (elbows + hands) and stand (upper back + arm rotation) */}
+    <Composition id="posture-wake" component={PostureSeries} durationInFrames={seriesDuration(SERIES.wake)} fps={30} width={1080} height={1920} defaultProps={{variant: 'wake' as const}} />
+    <Composition id="posture-stand" component={PostureSeries} durationInFrames={seriesDuration(SERIES.stand)} fps={30} width={1080} height={1920} defaultProps={{variant: 'stand' as const}} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}
