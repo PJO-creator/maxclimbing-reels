@@ -1,0 +1,17 @@
+{
+  "hook": {"src": "clips/fix/muscleup.mp4", "from": 9.6, "dur": 3.2, "l1": "You can pull.", "l2": "Can you press?", "l2At": 1.2},
+  "anatomy": {
+    "dur": 5.6,
+    "pose": {"elbowFlex": 95, "armFlex": 12, "intRot": 0, "pronation": 10, "fist": 0.6},
+    "cam": {"pos": [250, 130, 8], "at": [8, 124, 8]},
+    "pullIn": {"muscles": ["biceps"], "text": "Climbing trains the pull:<br/>*biceps*"},
+    "pullOut": {"muscles": ["triceps"], "text": "Mantles and top-outs need the press:<br/>*triceps*"}
+  },
+  "exercises": [
+    {"src": "clips/fix/triceps_ext.mp4", "from": 9, "dur": 4.6, "title": "Ring triceps extension", "cue": "Body straight. Only the elbows bend.<br/>Feet further back = harder."},
+    {"src": "clips/fix/dips.mp4", "from": 12, "dur": 4.4, "title": "Ring dips", "cue": "Shoulders down.<br/>Elbows back, not out."},
+    {"src": "clips/fix/triceps_cable.mp4", "from": 8, "dur": 4.4, "title": "No rings? Cable pushdown", "cue": "Elbows pinned to your sides."}
+  ],
+  "plan": {"dur": 4.6, "lines": ["3 × 8–12", "2× per week", "Slow on the way down"], "note": "Pain? Stop and see a physio."},
+  "outro": {"dur": 2.2, "title": "Save this for\nyour next session."}
+}

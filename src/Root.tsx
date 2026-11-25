@@ -9,6 +9,8 @@ import {BotTest} from './three/BotTest';
 import {ShoulderShort, SHOULDER_SHORT_DURATION} from './three/ShoulderShort';
 import {PostureOverview, POSTURE_OVERVIEW_DURATION} from './three/PostureOverview';
 import {PostureSeries, SERIES, seriesDuration} from './three/PostureSeries';
+import {FixReel, FixContent, fixParts} from './three/FixReel';
+import fixTriceps from '../data/fix-triceps.json';
 import {EntralpiLearn, entralpiTimeline, EntralpiContent} from './EntralpiLearn';
 import pps from '../data/pps.json';
 import entralpi from '../data/entralpi-learn.json';
@@ -80,6 +82,8 @@ export const RemotionRoot: React.FC = () => (
     {/* Split episodes: wake up (elbows + hands) and stand (upper back + arm rotation) */}
     <Composition id="posture-wake" component={PostureSeries} durationInFrames={seriesDuration(SERIES.wake)} fps={30} width={1080} height={1920} defaultProps={{variant: 'wake' as const}} />
     <Composition id="posture-stand" component={PostureSeries} durationInFrames={seriesDuration(SERIES.stand)} fps={30} width={1080} height={1920} defaultProps={{variant: 'stand' as const}} />
+    {/* Posture fixes: real footage + Mannequin anatomy + protocol */}
+    <Composition id="fix-triceps" component={FixReel} durationInFrames={fixParts(fixTriceps as unknown as FixContent).total} fps={30} width={1080} height={1920} defaultProps={{content: fixTriceps as unknown as FixContent}} />
     {/* 3D style test */}
     <Composition id="pps-3d-test" component={PPS3DTest} durationInFrames={FLY_DURATION} fps={30} width={1080} height={1920} />
     {/* Version C: how-to in 3D (from CAD) */}
